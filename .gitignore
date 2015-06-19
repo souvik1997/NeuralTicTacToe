@@ -1,0 +1,9 @@
+build/
+*.log
+*.pid
+*.seed
+lib-cov
+coverage
+.grunt
+.lock-wscript
+node_modules

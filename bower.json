@@ -1,0 +1,21 @@
+{
+  "name": "NeuralTicTacToe",
+  "version": "0.0.0",
+  "authors": [
+    "Souvik Banerjee <souvik1997@gmail.com>"
+  ],
+  "description": "Tic Tac Toe AI using Neural Networks",
+  "keywords": [
+    "Tic",
+    "Tac",
+    "Toe"
+  ],
+  "license": "AGPLv3",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+}

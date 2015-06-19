@@ -7,3 +7,4 @@ coverage
 .grunt
 .lock-wscript
 node_modules
+bower_components

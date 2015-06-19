@@ -1,19 +1,23 @@
 describe 'Neuron', ->
-	neuron = null
-	neuron = new Neuron();
-	neuron.addConnection(10, new Neuron())
-	it 'can initialize', () ->
-		expect(neuron).toBeDefined()
-	it 'can add new neurons to network', () ->		
-		expect(neuron.getConnection(0).weight).toBe(10)
-	it 'can have events', () ->
-		spyObj = 
-				callback: () -> 
-					return;
-		spyOn(spyObj,'callback')
-		neuron.on('receive', spyObj.callback)
-		neuron.receive();
-		expect(spyObj.callback).toHaveBeenCalled();
-	it 'can remove neurons', () ->
-		neuron.removeConnection(0)
-		expect(neuron.getConnection(0)).toBe(undefined)
+  first_neuron = new Neuron()
+  second_neuron = new Neuron()
+  second_neuron.addDendrite(first_neuron, 0.3)
+  it 'can initialize', () ->
+    expect(first_neuron).toBeDefined()
+  it 'can add new neurons to network', () ->
+    expect(second_neuron.getDendrite(0).weight).toBe(0.3)
+  it 'can have events', () ->
+    spyObj =
+      callback: () ->
+        return
+    spyOn(spyObj,'callback')
+    first_neuron.on('fire', spyObj.callback)
+    second_neuron.getOutput()
+    expect(spyObj.callback).toHaveBeenCalled()
+  it 'can search for neurons', () ->
+    expect(second_neuron.searchDendrites(first_neuron)).toEqual([0])
+  it 'can get the first result of a search for neurons', () ->
+    expect(second_neuron.searchDendritesAndGetFirst(first_neuron)).toEqual(0)
+  it 'can remove neurons', () ->
+    second_neuron.removeDendrite(0)
+    expect(second_neuron.getDendrite(0)).toEqual(undefined)

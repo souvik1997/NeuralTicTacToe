@@ -1,34 +1,44 @@
 class Neuron
-	axonTerminals = []
-	events = []
-	_id = Math.round Math.random() * 1000000;
-	addConnection: (weight, target_neuron) ->
-		axonTerminals.push { weight: weight, neuron: target_neuron}
-	receive: ->
-		if events['receive']? and typeof events['receive'] is "function"
-			events['receive']()
-		sum = 0
-		sum += x.weight for x in axonTerminals;
-		target = Math.round Math.random() * sum;
-		cumulativeWeight = 0
-		for [weight, neuron] in axonTerminals
-			cumulativeWeight += weight
-			if cumulativeWeight > target
-				neuron.receive()
-				return
-	equals: (neuron) ->
-		return _id is neuron._id
-	removeConnection: (arg) ->
-		if typeof arg is "number"
-			axonTerminals.splice arg, 1
-		else if typeof arg is "object"
-			index = (i for o, i in axonTerminals when o.equals(arg))
-			removeConnection index
-		return
-	getConnection: (index) ->
-		return axonTerminals[index]
-	on: (event, callback) ->
-		events[event] = callback
+    constructor: () ->
+        @dendrites = new Array()
+        @events = new Array()
+        @_id = Math.round Math.random() * 1000000;
+
+    addDendrite: (target_neuron, weight) ->
+        @dendrites.push { weight: weight, neuron: target_neuron}
+
+    removeDendrite: (arg) ->
+        @dendrites.splice arg, 1
+
+    getDendrite: (index) ->
+        return @dendrites[index]
+
+    getDendrites: (index) ->
+        return @dendrites
+
+    searchDendrites: (neuron) ->
+        return (i for o, i in @dendrites when o.neuron.equals(neuron))
+
+    searchDendritesAndGetFirst: (neuron) ->
+        return @searchDendrites(neuron)[0]
+
+    getOutput: ->
+        if @dendrites.length is 0
+            if @events['sense']? and typeof @events['sense'] is "function"
+                value = @events['sense']
+            else
+                value = 0
+        else
+            value = (x.weight * x.neuron.getOutput() for x in @dendrites).reduce((a,b) => a+b)
+        if @events['fire']? and typeof @events['fire'] is "function"
+            @events['fire']()
+        return value
+
+    equals: (neuron) ->
+        return @_id is neuron._id
+
+    on: (event, callback) ->
+        @events[event] = callback
 
 root = exports ? this
 root.Neuron = Neuron

@@ -1,3 +1,4 @@
+Neuron = require('./Neuron').Neuron
 class NeuralNetwork
   constructor: (first_neuron) ->
     @neurons = [first_neuron]
@@ -30,6 +31,9 @@ class NeuralNetwork
     @linkToStart(new_neuron, existing_neuron_next)
   delete: (index) ->
     neuron = @neurons[index]
+
+root = module.exports ? this
+root.NeuralNetwork = NeuralNetwork
 
 
 

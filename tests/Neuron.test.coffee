@@ -1,3 +1,4 @@
+Neuron = require('../Neuron').Neuron
 describe 'Neuron', ->
   first_neuron = new Neuron()
   second_neuron = new Neuron()

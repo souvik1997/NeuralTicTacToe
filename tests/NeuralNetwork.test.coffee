@@ -1,3 +1,5 @@
+NeuralNetwork = require('../NeuralNetwork').NeuralNetwork
+Neuron = require('../Neuron').Neuron
 describe 'NeuralNetwork', ->
   network = new NeuralNetwork(new Neuron())
   endNode = new Neuron()

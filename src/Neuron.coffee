@@ -46,5 +46,5 @@ class Neuron
   on: (event, callback) ->
     @events[event] = callback
 
-root = exports ? this
+root = module.exports ? this
 root.Neuron = Neuron

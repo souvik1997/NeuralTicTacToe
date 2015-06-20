@@ -2,7 +2,7 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     jshint: {
-      files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
+      files: ['Gruntfile.js', 'src/**/*.js'],
       options: {
         globals: {
           jQuery: true
@@ -11,22 +11,17 @@ module.exports = function(grunt) {
     },
     coffeelint: {
       app: ['*.coffee', 'src/**/*.coffee'],
-      tests: ['tests/**/*.coffee']
     },
     watch: {
-      js: {
-        files: ['<%= jshint.files %>'],
-        tasks: ['jshint']
+      app: {
+        files: ['src/**/*.js', 'src/**/*.coffee'],
+        tasks: ['default']
       },
-      coffeescript: {
-        files: ['<%= coffeelint.files %>'],
-        tasks: ['coffeelint']
-      }
     },
     karma: {
       unit: {
         options: {
-          files: ['dist/module.js', 'dist/module.tests.js'],
+          files: ['dist/js/module.js', 'dist/js/module.tests.js'],
           frameworks: ['jasmine', 'browserify'],
           reporters: ['progress'],
           port: 9876,
@@ -45,34 +40,46 @@ module.exports = function(grunt) {
         expand: true,
         flatten: true,
         src: ['src/*.coffee'],
-        dest: 'dist/',
+        dest: 'tmp/js/',
         ext: '.js'
       },
       test: {
         expand: true,
         flatten: true,
         src: ['src/tests/*.coffee'],
-        dest: 'dist/tests/',
+        dest: 'tmp/js/tests/',
         ext: '.test.js'
       }
     },
     browserify: {
       app: {
         files: {
-          'dist/module.js': ['dist/*.js'],
+          'dist/js/module.js': ['tmp/js/*.js'],
         }
       },
       test: {
         files: {
-          'dist/module.tests.js': ['dist/tests/*.js']
+          'dist/js/module.tests.js': ['tmp/js/tests/*.js']
         },
       }
     },
     clean: {
-      build: ['dist/']
+      build: ['dist/'],
+      tmp: ['tmp/'],
+      post_testbuild: ['dist/js/module.js'],
+      post_releasebuild: ['dist/js/module.js', 'dist/js/module.tests.js']
     },
     jasmine: {
-      src: ['dist/module.js', 'dist/module.tests.js']
+      src: ['dist/js/module.tests.js']
+    },
+    uglify: {
+      release:
+      {
+        files:
+        {
+          'dist/js/module.min.js': ['dist/js/module.js']
+        }
+      }
     }
   });
 
@@ -84,9 +91,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
 
 
-  grunt.registerTask('default', ['jshint', 'coffeelint', 'test']);
-  grunt.registerTask('test', ['clean:build', 'coffee:app', 'coffee:test', 'browserify:app', 'browserify:test', 'jasmine']);
+  grunt.registerTask('default', ['jshint', 'coffeelint', 'build']);
+  grunt.registerTask('build', ['clean:build', 'clean:tmp', 'coffee:app', 'coffee:test', 'browserify:app', 'browserify:test', 'jasmine']);
+  grunt.registerTask('test', ['default', 'clean:post_testbuild']);
+  grunt.registerTask('release', ['default', 'uglify', 'clean:post_releasebuild']);
 
 };

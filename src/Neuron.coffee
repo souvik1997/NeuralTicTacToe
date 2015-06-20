@@ -37,7 +37,7 @@ class Neuron
       value = (x.weight * x.neuron.getOutput() for x in @dendrites)
         .reduce((a,b) -> a+b)
     if @events['fire']? and typeof @events['fire'] is "function"
-      @events['fire']()
+      @events['fire'](value)
     return value
 
   equals: (neuron) ->

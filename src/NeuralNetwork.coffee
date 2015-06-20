@@ -37,6 +37,28 @@ class NeuralNetwork
     @linkToStart(new_neuron, existing_neuron_next)
   delete: (index) ->
     neuron = @neurons[index]
+  checkCircularReference: (neuron, dendrite) ->
+    visited = []
+    isCircular = false
+    checkCircularReferenceHelper = (n) ->
+      if isCircular
+        return true
+      visited[n._id] = true
+      for d in n.dendrites
+        ns = d.neuron
+        if visited[ns._id]?
+          isCircular = true
+          return true
+        if ns.dendrites.length > 0
+          isCircular = checkCircularReferenceHelper(ns) || isCircular
+      if n.equals(neuron)
+        if visited[dendrite._id]?
+          isCircular = true
+          return true
+        if dendrite.dendrites.length > 0
+          isCircular = checkCircularReferenceHelper(dendrite) || isCircular
+      return isCircular
+    return checkCircularReferenceHelper(neuron)
   clone: () ->
     jQuery.extend true, {}, @
 

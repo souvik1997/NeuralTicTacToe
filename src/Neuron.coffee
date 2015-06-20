@@ -1,7 +1,7 @@
 NeuronType = require('./NeuronType').NeuronType
 class Neuron
   constructor: (text, id) ->
-    @_initialize(id)
+    @_initialize(text, id)
     @type = NeuronType.generic
 
   _initialize: (text, id) ->

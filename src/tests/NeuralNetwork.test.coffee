@@ -35,5 +35,13 @@ describe 'NeuralNetwork', ->
     expect(new_network.neurons[0]).toEqual(rootNode)
     new_network.neurons[0] = new Neuron()
     expect(new_network.neurons[0].equals(rootNode)).toBeFalsy()
-  
-  
+  it 'can check for circular references', () -> # actual network is not needed
+    n1 = new Neuron("", 123)
+    n2 = new Neuron("", 456)
+    n3 = new Neuron("", 789)
+    n1.addDendrite(n2,1)
+    n2.addDendrite(n3,1)
+    expect(network.checkCircularReference(n3,n1)).toBeTruthy()
+    expect(network.checkCircularReference(n3, new Neuron())).toBeFalsy()
+    n3.addDendrite(n1)
+    expect(network.checkCircularReference(n3,new Neuron())).toBeTruthy()

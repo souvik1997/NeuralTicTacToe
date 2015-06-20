@@ -1,4 +1,5 @@
 Neuron = require('./Neuron').Neuron
+jQuery = require('jquery')
 class NeuralNetwork
   constructor: (first_neuron) ->
     @neurons = [first_neuron]
@@ -31,6 +32,8 @@ class NeuralNetwork
     @linkToStart(new_neuron, existing_neuron_next)
   delete: (index) ->
     neuron = @neurons[index]
+  clone: () ->
+    jQuery.extend true, {}, @
 
 root = module.exports ? this
 root.NeuralNetwork = NeuralNetwork

@@ -28,5 +28,10 @@ describe 'NeuralNetwork', ->
     network.unlinkFromAll(endNode)
     expect(beginningNode.hasDendrite endNode).toBeFalsy()
     expect(endNode.hasDendrite network.root).toBeFalsy()
+  it 'can clone itself', () ->
+    new_network = network.clone()
+    expect(new_network.root).toEqual(network.root)
+    new_network.root = new Neuron()
+    expect(new_network.root.equals(network.root)).toBeFalsy()
   
   

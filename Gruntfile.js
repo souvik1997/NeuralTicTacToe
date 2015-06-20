@@ -51,7 +51,7 @@ module.exports = function(grunt) {
       test: {
         expand: true,
         flatten: true,
-        src: ['tests/*.coffee'],
+        src: ['src/tests/*.coffee'],
         dest: 'dist/tests/',
         ext: '.test.js'
       }

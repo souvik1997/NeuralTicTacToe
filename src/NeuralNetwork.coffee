@@ -30,11 +30,6 @@ class NeuralNetwork
     @linkToStart(new_neuron, existing_neuron_next)
   delete: (index) ->
     neuron = @neurons[index]
-    @unlinkFromAll(neuron)
-    @neurons.splice index,1
-    
-root = exports ? this
-root.NeuralNetwork = NeuralNetwork
 
 
 

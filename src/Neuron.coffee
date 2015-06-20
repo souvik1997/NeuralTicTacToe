@@ -1,8 +1,13 @@
+NeuronType = require('./NeuronType').NeuronType
 class Neuron
-  constructor: () ->
+  constructor: (id) ->
+    @_initialize(id)
+    @type = NeuronType.generic
+
+  _initialize: (id) ->
     @dendrites = new Array()
     @events = new Array()
-    @_id = Math.round Math.random() * 1000000
+    @_id = id ? Math.round Math.random() * 1000000
 
   addDendrite: (target_neuron, weight) ->
     if not @hasDendrite(target_neuron) and not target_neuron.equals @
@@ -28,12 +33,7 @@ class Neuron
     return @findDendrite(neuron) != -1
 
   getOutput: ->
-    if @dendrites.length is 0
-      if @events['sense']? and typeof @events['sense'] is "function"
-        value = @events['sense']
-      else
-        value = 0
-    else
+    if @dendrites.length != 0
       value = (x.weight * x.neuron.getOutput() for x in @dendrites)
         .reduce((a,b) -> a+b)
     if @events['fire']? and typeof @events['fire'] is "function"
@@ -46,5 +46,31 @@ class Neuron
   on: (event, callback) ->
     @events[event] = callback
 
+class SensoryNeuron extends Neuron
+  constructor: (id)->
+    @_initialize(id)
+    @type = NeuronType.sensory
+  getOutput: ->
+    if @dendrites.length is 0
+      if @events['sense']? and typeof @events['sense'] is "function"
+        value = @events['sense']()
+      else
+        value = 0
+    else
+      value = (x.weight * x.neuron.getOutput() for x in @dendrites)
+        .reduce((a,b) -> a+b)
+    if @events['fire']? and typeof @events['fire'] is "function"
+      @events['fire'](value)
+    return value
+
+class OutputNeuron extends Neuron
+  constructor: (id) ->
+    @_initialize(id)
+    @type = NeuronType.output
+
+
 root = module.exports ? this
 root.Neuron = Neuron
+root.SensoryNeuron = SensoryNeuron
+root.OutputNeuron = OutputNeuron
+

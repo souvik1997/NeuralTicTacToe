@@ -3,11 +3,6 @@ module.exports = function(grunt) {
   grunt.initConfig({
     jshint: {
       files: ['Gruntfile.js', 'src/**/*.js'],
-      options: {
-        globals: {
-          jQuery: true
-        }
-      }
     },
     coffeelint: {
       app: ['*.coffee', 'src/**/*.coffee'],
@@ -43,7 +38,7 @@ module.exports = function(grunt) {
         dest: 'tmp/js/',
         ext: '.js'
       },
-      test: {
+      tests: {
         expand: true,
         flatten: true,
         src: ['src/tests/*.coffee'],
@@ -54,31 +49,56 @@ module.exports = function(grunt) {
     browserify: {
       app: {
         files: {
-          'dist/js/module.js': ['tmp/js/*.js'],
+          'dist/js/module.js': ['tmp/js/**/*.js'],
         }
       },
-      test: {
-        files: {
-          'dist/js/module.tests.js': ['tmp/js/tests/*.js']
-        },
-      }
     },
     clean: {
       build: ['dist/'],
       tmp: ['tmp/'],
-      post_testbuild: ['dist/js/module.js'],
-      post_releasebuild: ['dist/js/module.js', 'dist/js/module.tests.js']
     },
     jasmine: {
-      src: ['dist/js/module.tests.js']
+      src: ['dist/js/module.js']
     },
     uglify: {
       release:
       {
         files:
         {
-          'dist/js/module.min.js': ['dist/js/module.js']
+          'dist/js/module.js': ['dist/js/module.js']
         }
+      }
+    },
+    uncss: {
+      release:
+      {
+        files:
+        {
+          'dist/css/module.css': ['dist/index.html']
+        }
+      }
+    },
+    cssmin: {
+      release:
+      {
+        files:
+        {
+          'dist/css/module.css': ['styles/**/*.css', 'node_modules/bootstrap/dist/**/*.css','!node_modules/bootstrap/dist/**/*.min.css', 'node_modules/vis/dist/**/*.css', '!node_modules/vis/dist/**/min.css']
+        }
+      }
+    },
+    copy: {
+      html: {
+        flatten: true,
+        expand: true,
+        src: 'html/**/*.html',
+        dest: 'dist/'
+      },
+      js: {
+        flatten: true,
+        expand: true,
+        src: 'src/**/*.js',
+        dest: 'tmp/js/'
       }
     }
   });
@@ -92,11 +112,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-uncss');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
 
-  grunt.registerTask('default', ['jshint', 'coffeelint', 'build']);
-  grunt.registerTask('build', ['clean:build', 'clean:tmp', 'coffee:app', 'coffee:test', 'browserify:app', 'browserify:test', 'jasmine']);
-  grunt.registerTask('test', ['default', 'clean:post_testbuild']);
-  grunt.registerTask('release', ['default', 'uglify', 'clean:post_releasebuild']);
+  grunt.registerTask('default', ['clean:build', 'clean:tmp', 'jshint', 'coffeelint', 'cssmin:release', 'copy:html', 'copy:js', 'coffee:app']);
+  grunt.registerTask('debug', ['default', 'coffee:tests', 'browserify', 'jasmine']);
+  grunt.registerTask('release', ['default', 'browserify', 'uglify', 'uncss:release']);
 
 };

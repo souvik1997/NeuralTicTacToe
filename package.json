@@ -4,13 +4,16 @@
   "description": "Tic Tac Toe with a neural network AI",
   "main": "index.js",
   "dependencies": {
+    "bootstrap": "^3.3.5",
     "jasmine-core": "^2.3.4",
     "jquery": "^2.1.4",
     "karma": "^0.12.36",
     "karma-chrome-launcher": "^0.1.12",
-    "karma-jasmine": "^0.3.5"
+    "karma-jasmine": "^0.3.5",
+    "vis": "^4.3.0"
   },
   "devDependencies": {
+    "babelify": "^6.1.2",
     "brfs": "^1.4.0",
     "browserify": "^10.2.4",
     "browserify-shim": "^3.8.9",
@@ -23,11 +26,15 @@
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-coffee": "^0.13.0",
     "grunt-contrib-coffeeify": "^0.1.0",
+    "grunt-contrib-copy": "^0.8.0",
+    "grunt-contrib-cssmin": "^0.12.3",
     "grunt-contrib-jasmine": "^0.8.2",
     "grunt-contrib-jshint": "^0.11.2",
     "grunt-contrib-uglify": "^0.9.1",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-karma": "^0.11.0",
+    "grunt-suitcss": "^0.5.0",
+    "grunt-uncss": "^0.4.2",
     "jasmine-core": "^2.3.4",
     "karma": "^0.12.36",
     "karma-browserify": "^4.2.1",
@@ -36,7 +43,8 @@
     "karma-firefox-launcher": "^0.1.6",
     "karma-jasmine": "^0.3.5",
     "karma-phantomjs-launcher": "^0.2.0",
-    "phantomjs": "^1.9.17"
+    "phantomjs": "^1.9.17",
+    "vis": "^4.3.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

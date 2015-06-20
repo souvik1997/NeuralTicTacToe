@@ -10,7 +10,8 @@ module.exports = function(grunt) {
       }
     },
     coffeelint: {
-      app: ['*.coffee', 'src/**/.coffee', 'tests/**/*.coffee'],
+      app: ['*.coffee', 'src/**/*.coffee'],
+      tests: ['tests/**/*.coffee']
     },
     watch: {
       js: {

@@ -15,9 +15,7 @@ describe 'Neuron', ->
     second_neuron.getOutput()
     expect(spyObj.callback).toHaveBeenCalled()
   it 'can search for neurons', () ->
-    expect(second_neuron.searchDendrites(first_neuron)).toEqual([0])
-  it 'can get the first result of a search for neurons', () ->
-    expect(second_neuron.searchDendritesAndGetFirst(first_neuron)).toEqual(0)
+    expect(second_neuron.findDendrite(first_neuron)).toEqual(0)
   it 'can remove neurons', () ->
     second_neuron.removeDendrite(0)
     expect(second_neuron.getDendrite(0)).toEqual(undefined)

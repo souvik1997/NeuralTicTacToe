@@ -27,7 +27,7 @@ class Visualizer # Wrapper for vis.js
     }
     options = {
       nodes: {
-        shape: dot
+        shape: 'dot'
       }
     }
     if @container?

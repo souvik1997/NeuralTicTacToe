@@ -10,9 +10,11 @@ jQuery(() ->
   console.log "initializing"
   first_hidden_layer = []
   second_hidden_layer = []
+  third_hidden_layer = []
   for x in [0..3]
     first_hidden_layer.push(new Neuron())
     second_hidden_layer.push(new Neuron())
+    third_hidden_layer.push(new Neuron())
 
   sensory_neurons = []
   output_neurons = []
@@ -25,12 +27,15 @@ jQuery(() ->
   for first in first_hidden_layer
     for second in second_hidden_layer
       network.linkToEnd(first, second, Math.random())
+  for second in second_hidden_layer
+    for third in third_hidden_layer
+      network.linkToEnd(second, third, Math.random())
   for neuron in sensory_neurons
     for first in first_hidden_layer
       network.linkToStart(neuron, first, Math.random())
   for neuron in output_neurons
-    for second in second_hidden_layer
-      network.linkToEnd(second, neuron, Math.random())
+    for third in third_hidden_layer
+      network.linkToEnd(third, neuron, Math.random())
 
   visualizer = new Visualizer(container, network)
   visualizer.createNodesAndEdges()

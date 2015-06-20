@@ -26,5 +26,8 @@ describe 'NeuralNetwork', ->
     network.unlinkFromAll(endNode)
     expect(beginningNode.isADendrite endNode).toBeFalsy()
     expect(endNode.isADendrite network.root).toBeFalsy()
-  
+  it 'can delete a neuron', () ->
+    original = network.neurons.length
+    network.delete(network.findInNetwork beginningNode)
+    expect(network.neurons.length).toEqual(original - 1)
   

@@ -19,3 +19,4 @@ describe 'Neuron', ->
   it 'can remove neurons', () ->
     second_neuron.removeDendrite(0)
     expect(second_neuron.getDendrite(0)).toEqual(undefined)
+  

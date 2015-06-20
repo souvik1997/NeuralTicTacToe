@@ -8,15 +8,12 @@ class Neuron
     if not @isADendrite(target_neuron) and not target_neuron.equals @
       @dendrites.push { weight: weight, neuron: target_neuron}
 
-  removeDendrite: (arg) ->
-    if arg >= 0
-      @dendrites.splice arg, 1
+  removeDendrite: (index) ->
+    if index >= 0
+      @dendrites.splice index, 1
 
   getDendrite: (index) ->
     return @dendrites[index]
-
-  getDendrites: (index) ->
-    return @dendrites
 
   clearDendrites: () ->
     @dendrites = []

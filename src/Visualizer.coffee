@@ -5,33 +5,29 @@ class Visualizer # Wrapper for vis.js
     @container = container
     @network = network
     @settings = {}
-    @settings[NeuronType.generic] = 'rgb(32,145,24)'
-    @settings[NeuronType.sensory] = 'rgb(171,20,10)'
-    @settings[NeuronType.output] = 'rgb(12,42,180)'
+    @settings[NeuronType.generic] = 'rgb(132,245,124)'
+    @settings[NeuronType.sensory] = 'rgb(170,189,89)'
+    @settings[NeuronType.output] = 'rgb(142,142,180)'
   createNodesAndEdges: () ->
     @nodes = []
     @edges = []
     for neuron in @network.neurons
       color = @settings[neuron.type]
-      @nodes.push {id: neuron._id, color: color}
+      @nodes.push {id: neuron._id, color: color, label: neuron.text}
       for dendrite in neuron.dendrites
         @edges.push {
           from: dendrite.neuron._id,
           to: neuron._id,
-          value: dendrite.weight
+          value: dendrite.weight,
+          arrows:{to:{scaleFactor:0.05}}
         }
   draw: () ->
     data = {
       nodes: @nodes,
       edges: @edges
     }
-    options = {
-      nodes: {
-        shape: 'dot'
-      }
-    }
     if @container?
-      visnetwork = new vis.Network @container, data, options
+      visnetwork = new vis.Network @container, data, {}
 
 
 root = module.exports ? this

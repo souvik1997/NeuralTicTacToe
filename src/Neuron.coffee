@@ -1,13 +1,14 @@
 NeuronType = require('./NeuronType').NeuronType
 class Neuron
-  constructor: (id) ->
+  constructor: (text, id) ->
     @_initialize(id)
     @type = NeuronType.generic
 
-  _initialize: (id) ->
+  _initialize: (text, id) ->
     @dendrites = new Array()
     @events = new Array()
     @_id = id ? Math.round Math.random() * 1000000
+    @text = text
 
   addDendrite: (target_neuron, weight) ->
     if not @hasDendrite(target_neuron) and not target_neuron.equals @
@@ -47,8 +48,8 @@ class Neuron
     @events[event] = callback
 
 class SensoryNeuron extends Neuron
-  constructor: (id)->
-    @_initialize(id)
+  constructor: (text, id)->
+    @_initialize(text, id)
     @type = NeuronType.sensory
   getOutput: ->
     if @dendrites.length is 0
@@ -64,8 +65,8 @@ class SensoryNeuron extends Neuron
     return value
 
 class OutputNeuron extends Neuron
-  constructor: (id) ->
-    @_initialize(id)
+  constructor: (text, id) ->
+    @_initialize(text, id)
     @type = NeuronType.output
 
 

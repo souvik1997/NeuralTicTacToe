@@ -20,7 +20,7 @@ class NeuralNetwork
     next_neuron.removeDendrite next_neuron.findDendrite prev_neuron
   unlinkFromAll: (neuron) ->
     for n in @neurons
-      if n.isADendrite neuron
+      if n.hasDendrite neuron
         n.removeDendrite n.findDendrite neuron
     neuron.clearDendrites()
   insert: (existing_neuron_prev, new_neuron,

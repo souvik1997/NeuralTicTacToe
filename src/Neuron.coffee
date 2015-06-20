@@ -5,7 +5,7 @@ class Neuron
     @_id = Math.round Math.random() * 1000000
 
   addDendrite: (target_neuron, weight) ->
-    if not @isADendrite(target_neuron) and not target_neuron.equals @
+    if not @hasDendrite(target_neuron) and not target_neuron.equals @
       @dendrites.push { weight: weight, neuron: target_neuron}
 
   removeDendrite: (arg) ->
@@ -24,7 +24,7 @@ class Neuron
   findDendrite: (neuron) ->
     return (i for o, i in @dendrites when o.neuron.equals(neuron))[0] ? -1
 
-  isADendrite: (neuron) ->
+  hasDendrite: (neuron) ->
     return @findDendrite(neuron) != -1
 
   getOutput: ->

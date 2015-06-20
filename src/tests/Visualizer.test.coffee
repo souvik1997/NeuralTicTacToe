@@ -5,11 +5,13 @@ OutputNeuron = require('../Neuron').OutputNeuron
 NeuronType = require('../NeuronType').NeuronType
 Visualizer = require('../Visualizer').Visualizer
 describe 'Visualizer', ->
-  network = new NeuralNetwork(new Neuron())
+  network = new NeuralNetwork()
+  rootNode = new Neuron()
+  network.add(rootNode)
   endNode = new OutputNeuron()
   beginningNode = new SensoryNeuron()
-  network.linkToEnd(network.root, endNode, 0.1)
-  network.linkToStart(beginningNode, network.root, 0.1)
+  network.linkToEnd(rootNode, endNode, 0.1)
+  network.linkToStart(beginningNode, rootNode, 0.1)
   visualizer = new Visualizer(null, network)
   visualizer.createNodesAndEdges()
   it 'can initialize', () ->

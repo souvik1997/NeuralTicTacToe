@@ -4,8 +4,8 @@ SensoryNeuron = require('./Neuron').SensoryNeuron
 OutputNeuron = require('./Neuron').OutputNeuron
 Visualizer = require('./Visualizer').Visualizer
 NeuralNetwork = require('./NeuralNetwork').NeuralNetwork
+Math = require('./MathPolyfill').Math
 jQuery = require('jquery')
-
 class Genome
   constructor: () ->
     @genes = []
@@ -55,7 +55,7 @@ class Genome
     for gene, i in @genes
       if gene.weight?
         if Math.random() < options.weightchange.probability
-          gene.weight += Math.random() * options.weightchange.scale
+          gene.weight += Math.nrandom() * options.weightchange.scale
           changed.push(i)
         if Math.random() < options.reroute.probability and
         destGenesByID.length > 1 and sourceGenesByID.length > 1
@@ -77,7 +77,11 @@ class Genome
       changed.push(@genes.length - 1)
       tmp2 = route.to
       route.to = tmp.id
-      @genes.push { weight: Math.random(), from: tmp.id, to: tmp2 }
+      @genes.push {
+        weight: Neuron.generateRandomWeight(),
+        from: tmp.id,
+        to: tmp2
+      }
       changed.push(@genes.length - 1)
       changed.push(route_index)
     if Math.random() < options.route_deletion.probability
@@ -108,7 +112,7 @@ class Genome
       changed.push(hidden_neuron_index)
       for a in hidden_neuron_arriving
         for l in hidden_neuron_leaving
-          @genes.push({to: l, from: a, weight: Math.random()})
+          @genes.push({to: l, from: a, weight: Neuron.generateRandomWeight()})
           changed.push(@genes.length - 1)
     return changed
 

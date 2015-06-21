@@ -1,4 +1,5 @@
 NeuronType = require('./NeuronType').NeuronType
+Math = require('./MathPolyfill').Math
 class Neuron
   constructor: (text, id) ->
     @_initialize(text, id)
@@ -69,6 +70,8 @@ class OutputNeuron extends Neuron
     @_initialize(text, id)
     @type = NeuronType.output
 
+Neuron.generateRandomWeight = () ->
+  Math.nrandom() * 10
 
 root = module.exports ? this
 root.Neuron = Neuron

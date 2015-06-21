@@ -14,7 +14,7 @@ class NeuralNetwork
     return @findInNetwork(neuron) != -1
   isInNetworkByID: (id) ->
     return @findInNetworkByID(id) != -1
-  link: (prev_neuron, next_neuron, weight=0) ->
+  link: (prev_neuron, next_neuron, weight=Neuron.generateRandomWeight()) ->
     @add(prev_neuron)
     @add(next_neuron)
     if not @checkCircularReference(prev_neuron, next_neuron)
@@ -31,7 +31,8 @@ class NeuralNetwork
         n.removeDendrite n.findDendrite neuron
     neuron.clearDendrites()
   insert: (existing_neuron_prev, new_neuron,
-          existing_neuron_next, first_weight=0, second_weight=0) ->
+          existing_neuron_next, first_weight=Neuron.generateRandomWeight(),
+          second_weight=Neuron.generateRandomWeight()) ->
     @add(existing_neuron_prev)
     @add(new_neuron)
     @add(existing_neuron_next)

@@ -13,11 +13,11 @@ class Visualizer # Wrapper for vis.js
     @edges = []
     for neuron in @network.neurons
       color = @settings[neuron.type]
-      @nodes.push {id: neuron._id, color: color, label: neuron.text}
+      @nodes.push {id: neuron.id, color: color, label: neuron.text}
       for dendrite in neuron.dendrites
         @edges.push {
-          from: dendrite.neuron._id,
-          to: neuron._id,
+          from: dendrite.neuron.id,
+          to: neuron.id,
           value: dendrite.weight,
           arrows:{to:{scaleFactor:0.05}}
         }

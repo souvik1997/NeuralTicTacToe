@@ -10,8 +10,8 @@ describe 'Visualizer', ->
   network.add(rootNode)
   endNode = new OutputNeuron()
   beginningNode = new SensoryNeuron()
-  network.linkToEnd(rootNode, endNode, 0.1)
-  network.linkToStart(beginningNode, rootNode, 0.1)
+  network.link(rootNode, endNode, 0.1)
+  network.link(beginningNode, rootNode, 0.1)
   visualizer = new Visualizer(null, network)
   visualizer.createNodesAndEdges()
   it 'can initialize', () ->

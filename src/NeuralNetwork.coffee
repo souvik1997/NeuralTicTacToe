@@ -7,18 +7,21 @@ class NeuralNetwork
     if not @isInNetwork(neuron)
       @neurons.push(neuron)
   findInNetwork: (neuron) ->
-    return (i for o, i in @neurons when o.equals(neuron))[0] ? -1
+    return (o for o in @neurons when o.equals(neuron))[0] ? -1
+  findInNetworkByID: (id) ->
+    return (o for o in @neurons when o.id == id)[0] ? -1
   isInNetwork: (neuron) ->
     return @findInNetwork(neuron) != -1
-  linkToEnd: (existing_neuron, new_neuron, weight=0) ->
-    @add(new_neuron)
-    @add(existing_neuron)
-    new_neuron.addDendrite(existing_neuron, weight)
-  linkToStart: (new_neuron, existing_neuron, weight=0) ->
-    @add(new_neuron)
-    @add(existing_neuron)
-    existing_neuron.addDendrite(new_neuron, weight)
-  unlinkEnd: (prev_neuron, next_neuron) ->
+  isInNetworkByID: (id) ->
+    return @findInNetworkByID(id) != -1
+  link: (prev_neuron, next_neuron, weight=0) ->
+    @add(prev_neuron)
+    @add(next_neuron)
+    if not @checkCircularReference(prev_neuron, next_neuron)
+      next_neuron.addDendrite(prev_neuron, weight)
+      return true
+    return false
+  unlink: (prev_neuron, next_neuron) ->
     index = next_neuron.findDendrite prev_neuron
     if index >= 0
       next_neuron.removeDendrite index
@@ -29,12 +32,12 @@ class NeuralNetwork
     neuron.clearDendrites()
   insert: (existing_neuron_prev, new_neuron,
           existing_neuron_next, first_weight=0, second_weight=0) ->
-    @add(new_neuron)
     @add(existing_neuron_prev)
+    @add(new_neuron)
     @add(existing_neuron_next)
-    @unlinkEnd(existing_neuron_prev, existing_neuron_next)
-    @linkToEnd(existing_neuron_prev, new_neuron)
-    @linkToStart(new_neuron, existing_neuron_next)
+    @unlink(existing_neuron_prev, existing_neuron_next)
+    @link(existing_neuron_prev, new_neuron)
+    @link(new_neuron, existing_neuron_next)
   delete: (index) ->
     neuron = @neurons[index]
   checkCircularReference: (neuron, dendrite) ->
@@ -43,16 +46,16 @@ class NeuralNetwork
     checkCircularReferenceHelper = (n) ->
       if isCircular
         return true
-      visited[n._id] = true
+      visited[n.id] = true
       for d in n.dendrites
         ns = d.neuron
-        if visited[ns._id]?
+        if visited[ns.id]?
           isCircular = true
           return true
         if ns.dendrites.length > 0
           isCircular = checkCircularReferenceHelper(ns) || isCircular
       if n.equals(neuron)
-        if visited[dendrite._id]?
+        if visited[dendrite.id]?
           isCircular = true
           return true
         if dendrite.dendrites.length > 0

@@ -6,8 +6,8 @@ describe 'NeuralNetwork', ->
   network.add(rootNode)
   endNode = new Neuron()
   beginningNode = new Neuron()
-  network.linkToEnd(rootNode, endNode, 0.1)
-  network.linkToStart(beginningNode, rootNode, 0.1)
+  network.link(rootNode, endNode, 0.1)
+  network.link(beginningNode, rootNode, 0.1)
   it 'can initialize', () ->
     expect(network).toBeDefined()
   it 'can add to end', () ->
@@ -20,11 +20,11 @@ describe 'NeuralNetwork', ->
     expect(insertedNode.hasDendrite beginningNode).toBeTruthy()
     expect(rootNode.hasDendrite insertedNode).toBeTruthy()
   it 'can remove a neuron from one parent', () ->
-    network.unlinkEnd(rootNode, endNode)
+    network.unlink(rootNode, endNode)
     expect(endNode.hasDendrite rootNode).toBeFalsy()
   it 'can completely unlink a neuron', () ->
-    network.linkToEnd(rootNode, endNode, 0.1)
-    network.linkToStart(endNode, beginningNode, 0.1)
+    network.link(rootNode, endNode, 0.1)
+    network.link(endNode, beginningNode, 0.1)
     expect(beginningNode.hasDendrite endNode).toBeTruthy()
     expect(endNode.hasDendrite rootNode).toBeTruthy()
     network.unlinkFromAll(endNode)
@@ -32,7 +32,7 @@ describe 'NeuralNetwork', ->
     expect(endNode.hasDendrite rootNode).toBeFalsy()
   it 'can clone itself', () ->
     new_network = network.clone()
-    expect(new_network.neurons[0]).toEqual(rootNode)
+    expect(new_network.neurons[0].equals(rootNode)).toBeTruthy()
     new_network.neurons[0] = new Neuron()
     expect(new_network.neurons[0].equals(rootNode)).toBeFalsy()
   it 'can check for circular references', () -> # actual network is not needed
@@ -45,3 +45,8 @@ describe 'NeuralNetwork', ->
     expect(network.checkCircularReference(n3, new Neuron())).toBeFalsy()
     n3.addDendrite(n1)
     expect(network.checkCircularReference(n3,new Neuron())).toBeTruthy()
+  it 'can search for neurons', () ->
+    expect(network.findInNetwork(rootNode)).toBeDefined()
+    expect(network.findInNetwork(rootNode).equals(rootNode)).toBeTruthy()
+    expect(network.findInNetworkByID(rootNode.id)
+      .equals(rootNode)).toBeTruthy()

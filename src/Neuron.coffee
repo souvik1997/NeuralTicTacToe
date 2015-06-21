@@ -7,7 +7,7 @@ class Neuron
   _initialize: (text, id) ->
     @dendrites = new Array()
     @events = new Array()
-    @_id = id ? Math.round Math.random() * 1000000
+    @id = id ? Math.round Math.random() * 1000000
     @text = text
 
   addDendrite: (target_neuron, weight) ->
@@ -42,7 +42,7 @@ class Neuron
     return value
 
   equals: (neuron) ->
-    return @_id is neuron._id
+    return @id is neuron.id
 
   on: (event, callback) ->
     @events[event] = callback

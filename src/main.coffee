@@ -18,24 +18,22 @@ jQuery(() ->
 
   sensory_neurons = []
   output_neurons = []
-  pick_random = (arr) ->
-    return arr[Math.floor(Math.random() * arr.length)]
   for x in [0..2]
     for y in [0..2]
       sensory_neurons.push new SensoryNeuron("("+x+","+y+")")
       output_neurons.push new OutputNeuron("("+x+","+y+")")
   for first in first_hidden_layer
     for second in second_hidden_layer
-      network.linkToEnd(first, second, Math.random())
+      network.link(first, second, Math.random())
   for second in second_hidden_layer
     for third in third_hidden_layer
-      network.linkToEnd(second, third, Math.random())
+      network.link(second, third, Math.random())
   for neuron in sensory_neurons
     for first in first_hidden_layer
-      network.linkToStart(neuron, first, Math.random())
+      network.link(neuron, first, Math.random())
   for neuron in output_neurons
     for third in third_hidden_layer
-      network.linkToEnd(third, neuron, Math.random())
+      network.link(third, neuron, Math.random())
 
   visualizer = new Visualizer(container, network)
   visualizer.createNodesAndEdges()

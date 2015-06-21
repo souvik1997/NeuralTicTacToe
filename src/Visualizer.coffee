@@ -1,5 +1,6 @@
 vis = require('vis/dist/vis.js')
 NeuronType = require('./NeuronType').NeuronType
+Math = require('./MathPolyfill').Math
 class Visualizer # Wrapper for vis.js
   constructor: (container, network) ->
     @container = container
@@ -15,12 +16,17 @@ class Visualizer # Wrapper for vis.js
       color = @settings[neuron.type]
       @nodes.push {id: neuron.id, color: color, label: neuron.text}
       for dendrite in neuron.dendrites
-        @edges.push {
+        obj = {
           from: dendrite.neuron.id,
           to: neuron.id,
-          value: dendrite.weight,
+          value: Math.sigmoid(dendrite.weight),
           arrows:{to:{scaleFactor:0.05}}
         }
+        if (dendrite.weight < 0)
+          obj.color = 'rgb(200,50,80)'
+        else
+          obj.color = 'rgb(120,90,190)'
+        @edges.push obj
   draw: () ->
     data = {
       nodes: @nodes,

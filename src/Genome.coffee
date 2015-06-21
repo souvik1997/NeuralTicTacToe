@@ -12,7 +12,12 @@ class Genome
   deconstruct: (network) ->
     @genes = []
     for neuron in network.neurons
-      @genes.push {id: neuron.id, type: neuron.type, text: neuron.text}
+      @genes.push {
+        id: neuron.id,
+        type: neuron.type,
+        text: neuron.text,
+        bias: neuron.bias
+      }
       for dendrite in neuron.dendrites
         @genes.push {weight: dendrite.weight,
         from: dendrite.neuron.id, to: neuron.id}
@@ -22,9 +27,12 @@ class Genome
     for gene in @genes
       if gene.id?
         switch gene.type
-          when NeuronType.sensory then n = new SensoryNeuron(gene.text, gene.id)
-          when NeuronType.output then n = new OutputNeuron(gene.text, gene.id)
-          when NeuronType.generic then n = new Neuron(gene.text, gene.id)
+          when NeuronType.sensory then n =
+            new SensoryNeuron(gene.text, gene.bias, gene.id)
+          when NeuronType.output then n =
+            new OutputNeuron(gene.text, gene.bias, gene.id)
+          when NeuronType.generic then n =
+            new Neuron(gene.text, gene.bias, gene.id)
         network.add(n)
       else if gene.weight?
         second_pass.push(gene)
@@ -73,7 +81,7 @@ class Genome
       route_index = pick_random_index(routes_only)
       route = routes_only[route_index]
       tmp = new Neuron()
-      @genes.push {id: tmp.id, text: tmp.text, type: tmp.type}
+      @genes.push {id: tmp.id, text: tmp.text, type: tmp.type, bias: tmp.bias}
       changed.push(@genes.length - 1)
       tmp2 = route.to
       route.to = tmp.id

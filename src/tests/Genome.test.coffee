@@ -7,7 +7,8 @@ NeuronType = require('../NeuronType').NeuronType
 describe 'Genome', ->
   network = new NeuralNetwork()
   genome = new Genome()
-  network.link(new Neuron("neuron_1", 1), new Neuron("neuron_2",2), 0.2)
+  network.link(new Neuron("neuron_1", undefined, 1),
+    new Neuron("neuron_2", undefined, 2), 0.2)
   genome.deconstruct(network)
   new_network = genome.construct()
   it 'can initialize', () ->
@@ -32,7 +33,7 @@ describe 'Genome', ->
   it 'can mutate (weight)', () ->
     genome = new Genome()
     network = new NeuralNetwork()
-    network.add(new SensoryNeuron("neuron 3", 3))
+    network.add(new SensoryNeuron("neuron 3", undefined, 3))
     genome.deconstruct(network)
     changed = genome.mutate({
       weightchange: {
@@ -53,7 +54,8 @@ describe 'Genome', ->
       }
     })
     expect(changed.length).toEqual(0)
-    network.link(network.findInNetworkByID(3), new Neuron("neuron 4", 4))
+    network.link(network.findInNetworkByID(3),
+      new Neuron("neuron 4", undefined, 4))
     genome.deconstruct(network)
     changed = genome.mutate({
       weightchange: {
@@ -76,7 +78,8 @@ describe 'Genome', ->
     expect(changed.length).toEqual(1)
     expect(genome.genes[changed[0]].weight != 0).toBeTruthy()
   it 'can mutate (reroute)', () ->
-    network.link(network.findInNetworkByID(4), new OutputNeuron("neuron 5", 5))
+    network.link(network.findInNetworkByID(4),
+      new OutputNeuron("neuron 5", undefined, 5))
     genome.deconstruct(network)
     changed = genome.mutate({
       weightchange: {
@@ -103,8 +106,8 @@ describe 'Genome', ->
         genome.genes[changed[1]].from != 5)).toBeTruthy()
   it 'can mutate (route insertion)', () ->
     network = new NeuralNetwork()
-    network.link(new SensoryNeuron("SensoryNeuron 1", 1),
-      new OutputNeuron("OutputNeuron 1", 2))
+    network.link(new SensoryNeuron("SensoryNeuron 1", undefined, 1),
+      new OutputNeuron("OutputNeuron 1", undefined, 2))
     genome.deconstruct(network)
     changed = genome.mutate({
       weightchange: {
@@ -150,11 +153,11 @@ describe 'Genome', ->
     expect(genome.genes[changed[0]]).toEqual({empty: true})
   it 'can mutate (hidden layer deletion)', () ->
     network = new NeuralNetwork()
-    sense_1 = new SensoryNeuron("", 1)
-    sense_2 = new SensoryNeuron("", 2)
-    hidden_3 = new Neuron("", 3)
-    output_4 = new OutputNeuron("", 4)
-    output_5 = new OutputNeuron("", 5)
+    sense_1 = new SensoryNeuron("", undefined, 1)
+    sense_2 = new SensoryNeuron("", undefined, 2)
+    hidden_3 = new Neuron("", undefined, 3)
+    output_4 = new OutputNeuron("", undefined, 4)
+    output_5 = new OutputNeuron("", undefined, 5)
     network.link(sense_1, hidden_3)
     network.link(sense_2, hidden_3)
     network.link(hidden_3, output_4)

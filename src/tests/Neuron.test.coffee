@@ -26,6 +26,20 @@ describe 'Neuron', ->
   it 'can remove neurons', () ->
     second_neuron.removeDendrite(0)
     expect(second_neuron.getDendrite(0)).toEqual(undefined)
+  it 'can have a set ID', () ->
+    test = new Neuron("", undefined, -1)
+    expect(test.id).toEqual(-1)
+  it 'can have a random ID', () ->
+    test = new Neuron()
+    expect(test.id).toBeDefined()
+    expect(test.id).toBeGreaterThan(-1)
+  it 'can have a set bias', () ->
+    test = new Neuron("", 10000000000)
+    expect(test.bias).toEqual(10000000000)
+  it 'can have a random bias', () ->
+    test = new Neuron()
+    expect(test.bias).toBeDefined()
+    expect(test.id).toBeGreaterThan(-1)
 
 describe 'SensoryNeuron', ->
   sensory_neuron = new SensoryNeuron()

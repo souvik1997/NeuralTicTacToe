@@ -1,15 +1,14 @@
 NeuronType = require('./NeuronType').NeuronType
 Math = require('./MathPolyfill').Math
 class Neuron
-  constructor: (text, id) ->
-    @_initialize(text, id)
+  constructor: (text, bias, id) ->
+    @_initialize(text, bias, id)
     @type = NeuronType.generic
 
-  _initialize: (text, id) ->
+  _initialize: (@text, @bias=Math.nrandom()*5,
+      @id=Math.round(Math.random() * 1000000)) ->
     @dendrites = new Array()
     @events = new Array()
-    @id = id ? Math.round Math.random() * 1000000
-    @text = text
 
   addDendrite: (target_neuron, weight) ->
     if not @hasDendrite(target_neuron) and not target_neuron.equals @
@@ -36,7 +35,7 @@ class Neuron
 
   getOutput: ->
     if @dendrites.length != 0
-      value = (x.weight * x.neuron.getOutput() for x in @dendrites)
+      value = (x.weight * x.neuron.getOutput() + @bias for x in @dendrites)
         .reduce((a,b) -> a+b)
     if @events['fire']? and typeof @events['fire'] is "function"
       @events['fire'](value)
@@ -49,8 +48,8 @@ class Neuron
     @events[event] = callback
 
 class SensoryNeuron extends Neuron
-  constructor: (text, id)->
-    @_initialize(text, id)
+  constructor: (text, bias, id)->
+    @_initialize(text, bias, id)
     @type = NeuronType.sensory
   getOutput: ->
     if @dendrites.length is 0
@@ -66,8 +65,8 @@ class SensoryNeuron extends Neuron
     return value
 
 class OutputNeuron extends Neuron
-  constructor: (text, id) ->
-    @_initialize(text, id)
+  constructor: (text, bias, id) ->
+    @_initialize(text, bias, id)
     @type = NeuronType.output
 
 Neuron.generateRandomWeight = () ->

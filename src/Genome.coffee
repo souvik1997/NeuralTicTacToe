@@ -28,11 +28,11 @@ class Genome
       if gene.id?
         switch gene.type
           when NeuronType.sensory then n =
-            new SensoryNeuron(gene.text, gene.bias, gene.id)
+            new SensoryNeuron(text: gene.text, bias: gene.bias, id: gene.id)
           when NeuronType.output then n =
-            new OutputNeuron(gene.text, gene.bias, gene.id)
+            new OutputNeuron(text: gene.text, bias: gene.bias, id: gene.id)
           when NeuronType.generic then n =
-            new Neuron(gene.text, gene.bias, gene.id)
+            new Neuron(text: gene.text, bias: gene.bias, id: gene.id)
         network.add(n)
       else if gene.weight?
         second_pass.push(gene)

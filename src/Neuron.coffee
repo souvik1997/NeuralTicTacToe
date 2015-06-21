@@ -1,7 +1,7 @@
 NeuronType = require('./NeuronType').NeuronType
 Math = require('./MathPolyfill').Math
 class Neuron
-  constructor: (text, bias, id) ->
+  constructor: ({text, bias, id} = {}) ->
     @_initialize(text, bias, id)
     @type = NeuronType.generic
 
@@ -48,7 +48,7 @@ class Neuron
     @events[event] = callback
 
 class SensoryNeuron extends Neuron
-  constructor: (text, bias, id)->
+  constructor: ({text, bias, id} = {})->
     @_initialize(text, bias, id)
     @type = NeuronType.sensory
   getOutput: ->
@@ -65,7 +65,7 @@ class SensoryNeuron extends Neuron
     return value
 
 class OutputNeuron extends Neuron
-  constructor: (text, bias, id) ->
+  constructor: ({text, bias, id} = {}) ->
     @_initialize(text, bias, id)
     @type = NeuronType.output
 

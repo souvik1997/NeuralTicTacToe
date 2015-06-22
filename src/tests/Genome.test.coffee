@@ -7,8 +7,8 @@ NeuronType = require('../NeuronType').NeuronType
 describe 'Genome', ->
   network = new NeuralNetwork()
   genome = new Genome()
-  network.link(new Neuron(text: "neuron_1", id: 1),
-    new Neuron(text: "neuron_2", id: 2), 0.2)
+  network.link(new Neuron(text: "neuron_1", bias: 12, id: 1),
+    new Neuron(text: "neuron_2", bias: 13, id: 2), 0.2)
   genome.deconstruct(network)
   new_network = genome.construct()
   it 'can initialize', () ->
@@ -17,9 +17,11 @@ describe 'Genome', ->
     expect(genome.genes[0].id).toEqual(1)
     expect(genome.genes[0].text).toEqual("neuron_1")
     expect(genome.genes[0].type).toEqual(NeuronType.generic)
+    expect(genome.genes[0].bias).toEqual(12)
     expect(genome.genes[1].id).toEqual(2)
     expect(genome.genes[1].text).toEqual("neuron_2")
     expect(genome.genes[1].type).toEqual(NeuronType.generic)
+    expect(genome.genes[1].bias).toEqual(13)
     expect(genome.genes[2].weight).toEqual(0.2)
     expect(genome.genes[2].to).toEqual(2)
     expect(genome.genes[2].from).toEqual(1)

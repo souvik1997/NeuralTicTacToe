@@ -28,6 +28,7 @@ describe 'Genome', ->
   it 'can construct all neurons in a new network', () ->
     for n in new_network.neurons
       expect(network.isInNetworkByID(n.id)).toBeTruthy()
+      expect(network.isInNetwork(n)).toBeTruthy()
   it 'can construct all paths in a new network', () ->
     for n in new_network.neurons
       for m in network.findInNetwork(n).dendrites

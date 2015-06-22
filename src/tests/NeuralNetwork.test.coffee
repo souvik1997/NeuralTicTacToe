@@ -1,5 +1,7 @@
 NeuralNetwork = require('../NeuralNetwork').NeuralNetwork
 Neuron = require('../Neuron').Neuron
+SensoryNeuron = require('../Neuron').SensoryNeuron
+OutputNeuron = require('../Neuron').OutputNeuron
 describe 'NeuralNetwork', ->
   network = new NeuralNetwork()
   rootNode = new Neuron()
@@ -23,6 +25,10 @@ describe 'NeuralNetwork', ->
     network.unlink(rootNode, endNode)
     expect(endNode.hasDendrite rootNode).toBeFalsy()
   it 'can completely unlink a neuron', () ->
+    network = new NeuralNetwork()
+    rootNode = new Neuron()
+    endNode = new Neuron()
+    beginningNode = new Neuron()
     network.link(rootNode, endNode, 0.1)
     network.link(endNode, beginningNode, 0.1)
     expect(beginningNode.hasDendrite endNode).toBeTruthy()
@@ -35,6 +41,11 @@ describe 'NeuralNetwork', ->
     expect(new_network.neurons[0].equals(rootNode)).toBeTruthy()
     new_network.neurons[0] = new Neuron()
     expect(new_network.neurons[0].equals(rootNode)).toBeFalsy()
+  it 'can search for neurons', () ->
+    expect(network.findInNetwork(rootNode)).toBeDefined()
+    expect(network.findInNetwork(rootNode).equals(rootNode)).toBeTruthy()
+    expect(network.findInNetworkByID(rootNode.id)
+      .equals(rootNode)).toBeTruthy()
   it 'can check for circular references', () -> # actual network is not needed
     n1 = new Neuron(id: 123)
     n2 = new Neuron(id: 456)
@@ -45,8 +56,31 @@ describe 'NeuralNetwork', ->
     expect(network.checkCircularReference(n3, new Neuron())).toBeFalsy()
     n3.addDendrite(n1)
     expect(network.checkCircularReference(n3,new Neuron())).toBeTruthy()
-  it 'can search for neurons', () ->
-    expect(network.findInNetwork(rootNode)).toBeDefined()
-    expect(network.findInNetwork(rootNode).equals(rootNode)).toBeTruthy()
-    expect(network.findInNetworkByID(rootNode.id)
-      .equals(rootNode)).toBeTruthy()
+    network = new NeuralNetwork()
+    first_hidden_layer = []
+    second_hidden_layer = []
+    third_hidden_layer = []
+    for x in [0..3]
+      first_hidden_layer.push(new Neuron())
+      second_hidden_layer.push(new Neuron())
+      third_hidden_layer.push(new Neuron())
+
+    sensory_neurons = []
+    output_neurons = []
+    for x in [0..2]
+      for y in [0..2]
+        sensory_neurons.push new SensoryNeuron(text: "("+x+","+y+")")
+        output_neurons.push new OutputNeuron(text: "("+x+","+y+")")
+    for first in first_hidden_layer
+      for second in second_hidden_layer
+        network.link(first, second)
+    for second in second_hidden_layer
+      for third in third_hidden_layer
+        network.link(second, third)
+    for neuron in sensory_neurons
+      for first in first_hidden_layer
+        network.link(neuron, first)
+    for neuron in output_neurons
+      for third in third_hidden_layer
+        network.link(third, neuron)
+    expect(network.neurons.length).toEqual(9+9+4+4+4)

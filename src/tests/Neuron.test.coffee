@@ -36,6 +36,13 @@ describe 'Neuron', ->
   it 'can have a set bias', () ->
     test = new Neuron(bias: 10000000000)
     expect(test.bias).toEqual(10000000000)
+  it 'can test for equality', () ->
+    test = new Neuron(id: 32324324)
+    test2 = new Neuron(id: 121334345)
+    expect(test.equals(test2)).toBeFalsy()
+    test = new Neuron(id: 32439483)
+    test2 = new Neuron(id: 32439483)
+    expect(test.equals(test2)).toBeTruthy()
   it 'can have a random bias', () ->
     test = new Neuron()
     expect(test.bias).toBeDefined()

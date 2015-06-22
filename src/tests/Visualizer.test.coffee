@@ -4,6 +4,7 @@ SensoryNeuron = require('../Neuron').SensoryNeuron
 OutputNeuron = require('../Neuron').OutputNeuron
 NeuronType = require('../NeuronType').NeuronType
 Visualizer = require('../Visualizer').Visualizer
+Math = require('../MathPolyfill').Math
 describe 'Visualizer', ->
   network = new NeuralNetwork()
   rootNode = new Neuron()
@@ -21,7 +22,7 @@ describe 'Visualizer', ->
   it 'can create edges', () ->
     expect(visualizer.edges.length).toEqual(2)
   it 'can appropriately assign values to edges', () ->
-    expect(visualizer.edges[0].value).toEqual(0.1)
+    expect(visualizer.edges[0].value).toEqual(Math.sigmoid(0.1))
   it 'can appropriately color generic neurons', () ->
     expect(visualizer.nodes[0].color).toEqual(
       visualizer.settings[NeuronType.generic])

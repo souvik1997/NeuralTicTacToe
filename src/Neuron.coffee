@@ -42,7 +42,7 @@ class Neuron
     return value
 
   equals: (neuron) ->
-    return @id is neuron.id
+    return @id == neuron.id
 
   on: (event, callback) ->
     @events[event] = callback

@@ -15,9 +15,9 @@ class NeuralNetwork
   isInNetworkByID: (id) ->
     return @findInNetworkByID(id) != -1
   link: (prev_neuron, next_neuron, weight=Neuron.generateRandomWeight()) ->
-    @add(prev_neuron)
-    @add(next_neuron)
-    if not @checkCircularReference(prev_neuron, next_neuron)
+    if not @checkCircularReference(next_neuron, prev_neuron)
+      @add(prev_neuron)
+      @add(next_neuron)
       next_neuron.addDendrite(prev_neuron, weight)
       return true
     return false
@@ -33,36 +33,36 @@ class NeuralNetwork
   insert: (existing_neuron_prev, new_neuron,
           existing_neuron_next, first_weight=Neuron.generateRandomWeight(),
           second_weight=Neuron.generateRandomWeight()) ->
-    @add(existing_neuron_prev)
-    @add(new_neuron)
-    @add(existing_neuron_next)
     @unlink(existing_neuron_prev, existing_neuron_next)
-    @link(existing_neuron_prev, new_neuron)
+    if @link(existing_neuron_prev, new_neuron) and
     @link(new_neuron, existing_neuron_next)
+      @add(existing_neuron_prev)
+      @add(new_neuron)
+      @add(existing_neuron_next)
   delete: (index) ->
     neuron = @neurons[index]
   checkCircularReference: (neuron, dendrite) ->
-    visited = []
-    isCircular = false
-    checkCircularReferenceHelper = (n) ->
-      if isCircular
-        return true
-      visited[n.id] = true
-      for d in n.dendrites
-        ns = d.neuron
-        if visited[ns.id]?
-          isCircular = true
-          return true
-        if ns.dendrites.length > 0
-          isCircular = checkCircularReferenceHelper(ns) || isCircular
-      if n.equals(neuron)
-        if visited[dendrite.id]?
-          isCircular = true
-          return true
-        if dendrite.dendrites.length > 0
-          isCircular = checkCircularReferenceHelper(dendrite) || isCircular
-      return isCircular
-    return checkCircularReferenceHelper(neuron)
+    marked = []
+    onstack = []
+    cyclic = false
+    checkCircularReferenceHelper = (current) ->
+      marked[current.id] = true
+      onstack[current.id] = true
+      for d in current.dendrites
+        future = d.neuron
+        if not marked[future.id]
+          checkCircularReferenceHelper(future)
+        else if onstack[future.id]
+          cyclic = true
+      if current.equals(neuron)
+        if not marked[dendrite.id]
+          checkCircularReferenceHelper(dendrite)
+        else if onstack[dendrite.id]
+          cyclic = true
+      onstack[current.id] = false
+    checkCircularReferenceHelper(neuron)
+    return cyclic
+
   clone: () ->
     jQuery.extend true, {}, @
 

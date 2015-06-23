@@ -129,20 +129,22 @@ class Genome
     jQuery.extend true, {}, @
 
   equals: (other) ->
+    return @differences(other) == 0
+
+  differences: (other) ->
     closeTo = (x,y) -> Math.abs(x-y) < 0.000001
-    for othergene, index in other.genes
-      if @genes[index]?
-        match = true
-        jQuery.each(othergene, (k,v) => match = match && @genes[k]?)
-        if not ((@genes[index].empty == othergene.empty) or
-        (@genes[index].to == othergene.to and
-        @genes[index].from == othergene.from and
-        closeTo(@genes[index].weight, othergene.weight)) or
-        (closeTo(@genes[index].bias, othergene.bias) and
-        @genes[index].id == othergene.id and
-        @genes[index].text == othergene.text))
-          return false
-    return true
+    differences = 0
+    for gene, index in @genes
+      if not (other.genes[index]? and
+      ((gene.empty == other.genes[index].empty) or
+      (gene.to == other.genes[index].to and
+      gene.from == other.genes[index].from and
+      closeTo(gene.weight, other.genes[index].weight)) or
+      (closeTo(gene.bias, other.genes[index].bias) and
+      gene.id == other.genes[index].id and
+      gene.text == other.genes[index].text)))
+        differences++
+    return differences
 
 root = module.exports ? this
 root.Genome = Genome

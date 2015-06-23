@@ -186,3 +186,23 @@ describe 'Genome', ->
       }
     })
     expect(changed.length).toEqual(9)
+  it 'can compare itself to other genomes', () ->
+    network = new NeuralNetwork()
+    sense_1 = new SensoryNeuron(id: 1)
+    sense_2 = new SensoryNeuron(id: 2)
+    hidden_3 = new Neuron(id: 3)
+    output_4 = new OutputNeuron(id: 4)
+    output_5 = new OutputNeuron(id: 5)
+    genome = new Genome()
+    network.link(sense_1, hidden_3)
+    network.link(sense_2, hidden_3)
+    network.link(hidden_3, output_4)
+    network.link(hidden_3, output_5)
+    genome.deconstruct(network)
+    cloned_genome = genome.clone()
+    expect(cloned_genome).toBeDefined()
+    expect(genome.equals(cloned_genome)).toBeTruthy()
+    cloned_genome.genes[0] = {empty: true}
+    expect(genome.genes[0]).toBeDefined()
+    expect(genome.genes[0].empty).toEqual(undefined)
+    expect(genome.equals(cloned_genome)).toBeFalsy()

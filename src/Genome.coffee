@@ -128,5 +128,21 @@ class Genome
   clone: () ->
     jQuery.extend true, {}, @
 
+  equals: (other) ->
+    closeTo = (x,y) -> Math.abs(x-y) < 0.000001
+    for othergene, index in other.genes
+      if @genes[index]?
+        match = true
+        jQuery.each(othergene, (k,v) => match = match && @genes[k]?)
+        if not ((@genes[index].empty == othergene.empty) or
+        (@genes[index].to == othergene.to and
+        @genes[index].from == othergene.from and
+        closeTo(@genes[index].weight, othergene.weight)) or
+        (closeTo(@genes[index].bias, othergene.bias) and
+        @genes[index].id == othergene.id and
+        @genes[index].text == othergene.text))
+          return false
+    return true
+
 root = module.exports ? this
 root.Genome = Genome

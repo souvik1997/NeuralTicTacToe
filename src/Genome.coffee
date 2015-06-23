@@ -47,11 +47,12 @@ class Genome
     sourceGenesByID = []
     destGenesByID = []
     hiddenLayerGenesByID = []
+    routes_only = []
     pick_random = (arr) ->
       return arr[Math.floor(Math.random() * arr.length)]
     pick_random_index = (arr) ->
       return Math.floor(Math.random() * arr.length)
-    update = (source, dest, hidden, genome) ->
+    update = (source, dest, hidden, routes, genome) ->
       for gene in genome
         if gene.id?
           if gene.type != NeuronType.output
@@ -60,7 +61,13 @@ class Genome
             dest.push(gene.id)
           if gene.type != NeuronType.sensory and gene.type != NeuronType.output
             hidden.push(gene.id)
-    update(sourceGenesByID, destGenesByID, hiddenLayerGenesByID, @genes)
+        if gene.weight?
+          routes.push(gene)
+    update(sourceGenesByID,
+      destGenesByID,
+      hiddenLayerGenesByID,
+      routes_only,
+      @genes)
     for gene, i in @genes
       if gene.weight?
         if Math.random() < options.weightchange.probability
@@ -77,8 +84,8 @@ class Genome
             gene.from = pick_random((x for x in sourceGenesByID when x !=
             original_from))
           changed.push(i)
-    if Math.random() < options.route_insertion.probability
-      routes_only = (x for x in @genes when x.weight?)
+    if Math.random() < options.route_insertion.probability and
+    routes_only.length > 0
       route_index = pick_random_index(routes_only)
       route = routes_only[route_index]
       tmp = new Neuron()
@@ -93,8 +100,8 @@ class Genome
       }
       changed.push(@genes.length - 1)
       changed.push(route_index)
-    if Math.random() < options.route_deletion.probability
-      routes_only = (x for x in @genes when x.weight?)
+    if Math.random() < options.route_deletion.probability and
+    routes_only.length > 0
       route = pick_random(routes_only)
       matched_indices =
       (i for x, i in @genes when x.weight == route.weight and
@@ -102,7 +109,8 @@ class Genome
       for x in matched_indices
         @genes[x] = {empty: true}
         changed.push(x)
-    if Math.random() < options.hiddenlayer_deletion.probability
+    if Math.random() < options.hiddenlayer_deletion.probability and
+    hiddenLayerGenesByID.length > 0
       hidden_neuronid = pick_random(hiddenLayerGenesByID)
       hidden_neuron_index =
         (i for x, i in @genes when x.id == hidden_neuronid)[0]

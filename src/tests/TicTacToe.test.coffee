@@ -1,4 +1,5 @@
 TicTacToe = require('../TicTacToe').TicTacToe
+describe = require('../JasmineShim').describe
 describe 'TicTacToe', ->
   x = TicTacToe.player.X
   o = TicTacToe.player.O

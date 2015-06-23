@@ -2,6 +2,7 @@ Neuron = require('../Neuron').Neuron
 SensoryNeuron = require('../Neuron').SensoryNeuron
 OutputNeuron = require('../Neuron').OutputNeuron
 NeuronType = require('../NeuronType').NeuronType
+describe = require('../JasmineShim').describe
 describe 'Neuron', ->
   first_neuron = new Neuron()
   second_neuron = new Neuron()

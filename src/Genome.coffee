@@ -37,9 +37,10 @@ class Genome
       else if gene.weight?
         second_pass.push(gene)
     for gene in second_pass
-      to = network.findInNetworkByID(gene.to)
-      from = network.findInNetworkByID(gene.from)
-      network.link(from, to, gene.weight)
+      if network.isInNetworkByID(gene.to) and network.isInNetworkByID(gene.from)
+        to = network.findInNetworkByID(gene.to)
+        from = network.findInNetworkByID(gene.from)
+        network.link(from, to, gene.weight)
     return network
   mutate: (options) ->
     changed = []

@@ -5,6 +5,7 @@ OutputNeuron = require('../Neuron').OutputNeuron
 NeuronType = require('../NeuronType').NeuronType
 Visualizer = require('../Visualizer').Visualizer
 Math = require('../MathPolyfill').Math
+describe = require('../JasmineShim').describe
 describe 'Visualizer', ->
   network = new NeuralNetwork()
   rootNode = new Neuron()

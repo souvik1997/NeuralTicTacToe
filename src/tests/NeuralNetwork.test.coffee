@@ -2,6 +2,7 @@ NeuralNetwork = require('../NeuralNetwork').NeuralNetwork
 Neuron = require('../Neuron').Neuron
 SensoryNeuron = require('../Neuron').SensoryNeuron
 OutputNeuron = require('../Neuron').OutputNeuron
+describe = require('../JasmineShim').describe
 describe 'NeuralNetwork', ->
   network = new NeuralNetwork()
   rootNode = new Neuron()

@@ -4,6 +4,7 @@ SensoryNeuron = require('../Neuron').SensoryNeuron
 OutputNeuron = require('../Neuron').OutputNeuron
 Genome = require('../Genome').Genome
 NeuronType = require('../NeuronType').NeuronType
+describe = require('../JasmineShim').describe
 describe 'Genome', ->
   network = new NeuralNetwork()
   genome = new Genome()

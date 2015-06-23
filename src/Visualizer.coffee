@@ -32,8 +32,12 @@ class Visualizer # Wrapper for vis.js
       nodes: @nodes,
       edges: @edges
     }
+    options =
+      physics:
+        timestep: 0.1
+
     if @container?
-      visnetwork = new vis.Network @container, data, {}
+      visnetwork = new vis.Network @container, data, options
 
 
 root = module.exports ? this

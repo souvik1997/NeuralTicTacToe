@@ -4,11 +4,65 @@
 	</head>
 	<body>
 		<script src="js/module.js"></script>
-		<div id="mynetwork"></div>
+		<nav class="navbar navbar-default navbar-static-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">NeuralTicTacToe</a>
+				</div>
+				<div id="navbar" class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="#">Home</a></li>
+						<li><a href="https://github.com/souvik1997/NeuralTicTacToe">GitHub</a></li>
+						<li><a href="#" id="modal-toggle">View network</a></li>
+					</ul>
+				</div><!--/.nav-collapse -->
+			</div>
+		</nav>
+		<div id="mymodal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" id="modal-close">
+							&times;
+						</button>
+						<h4 class="modal-title">Network</h4>
+					</div>
+					<div class="modal-body">
+						<div id="mynetwork"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container center">
+			<div class="tic-tac-toe-container">
+				<table class="center">
+					<tr>
+						<td><button class="btn tic-tac-toe-btn" id="i00">&#x2715;</button></td>
+						<td><button class="btn tic-tac-toe-btn" id="i01">O</button></td>
+						<td><button class="btn tic-tac-toe-btn" id="i02">&nbsp;</button></td>
+					</tr>
+					<tr>
+						<td><button class="btn tic-tac-toe-btn" id="i10">&nbsp;</button></td>
+						<td><button class="btn tic-tac-toe-btn" id="i11">&nbsp;</button></td>
+						<td><button class="btn tic-tac-toe-btn" id="i12">&nbsp;</button></td>
+					</tr>
+					<tr>
+						<td><button class="btn tic-tac-toe-btn" id="i20">&nbsp;</button></td>
+						<td><button class="btn tic-tac-toe-btn" id="i21">&nbsp;</button></td>
+						<td><button class="btn tic-tac-toe-btn" id="i22">&nbsp;</button></td>
+					</tr>
+				</table>
+			</div>
+		</div>
 	</body>
 </html>
 
 
 
-	
 	

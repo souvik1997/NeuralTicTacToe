@@ -29,3 +29,12 @@ describe 'RandomTicTacToePlayer', ->
                   [x,_,o]]
     player.move()
     expect(game.state).toEqual(TicTacToe.state.xWin)
+  it 'can block a winning move', ->
+    game = new TicTacToe()
+    player = new RandomTicTacToePlayer(game, TicTacToe.player.O, 1)
+    game.board = [[_,x,_],
+                  [o,x,x],
+                  [x,o,o]]
+    player.move()
+    expect(game.state).toEqual(TicTacToe.state.inProgress)
+    expect(game.getPlayerAt(0, 2)).toEqual(TicTacToe.player.O)

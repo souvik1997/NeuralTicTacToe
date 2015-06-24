@@ -144,7 +144,7 @@ jQuery(() ->
       draws: 0
     }
     currentPlayer = TicTacToe.player.X
-    for x in [0..1000]
+    for x in [1..50]
       randomTTTPlayer = new RandomTicTacToePlayer(game, random_player)
       while game.state == TicTacToe.state.inProgress
         if random_player == currentPlayer
@@ -187,10 +187,20 @@ jQuery(() ->
   ancestor = new Organism(ancestral_genome)
   generations = []
   generations[0] = []
-  for x in [0..50]
+  for x in [1..10]
     child = ancestor.mate(ancestor,getMutationOptions(1))
     stats = getStats(child)
     child.fitness = 10*stats.wins+2*stats.draws-15*stats.losses
-    console.log JSON.stringify stats
+    generations[0].push(child)
+  interval 3000, ->
+    parents = generations[generations.length - 1]
+      .sort((a,b) -> b.fitness - a.fitness)
+    console.log("Fittest: #{parents[0].fitness}")
+    for x in [0..10]
+      child =
+        parents[0].mate(parents[1], getMutationOptions(
+          Math.sigmoid(100-generations.length)))
+      stats = getStats(child)
+      child.fitness = 10*stats.wins+2*stats.draws-15*stats.losses
 
 )

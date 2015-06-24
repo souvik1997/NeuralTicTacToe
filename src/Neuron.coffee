@@ -36,8 +36,9 @@ class Neuron
   getOutput: ->
     value = 1
     if @dendrites.length != 0
-      value = (x.weight * x.neuron.getOutput() + @bias for x in @dendrites)
-        .reduce((a,b) -> a+b)
+      value = Math.sigmoid(
+        (x.weight * x.neuron.getOutput() + @bias for x in @dendrites)
+        .reduce((a,b) -> a+b))
     if @events['fire']? and typeof @events['fire'] is "function"
       @events['fire'](value)
     return value
@@ -55,9 +56,9 @@ class SensoryNeuron extends Neuron
   getOutput: ->
     if @dendrites.length is 0
       if @events['sense']? and typeof @events['sense'] is "function"
-        value = @events['sense']()
+        value = Math.sigmoid(@events['sense']())
       else
-        value = 0
+        value = 1
     else
       value = (x.weight * x.neuron.getOutput() for x in @dendrites)
         .reduce((a,b) -> a+b)

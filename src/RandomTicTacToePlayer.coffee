@@ -20,8 +20,10 @@ class RandomTicTacToePlayer
     if definite_move.none
       x = possible_moves[Math.floor(Math.random() * possible_moves.length)]
       @game.move(x.r, x.c, @myplayer)
+      return {r: x.r, c: x.c}
     else
       @game.move(definite_move.r, definite_move.c, @myplayer)
+      return definite_move
 
 root = module.exports ? this
 root.RandomTicTacToePlayer = RandomTicTacToePlayer

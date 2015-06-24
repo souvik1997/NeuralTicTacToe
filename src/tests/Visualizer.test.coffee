@@ -14,8 +14,8 @@ describe 'Visualizer', ->
   beginningNode = new SensoryNeuron()
   network.link(rootNode, endNode, 0.1)
   network.link(beginningNode, rootNode, 0.1)
-  visualizer = new Visualizer(null, network)
-  visualizer.createNodesAndEdges()
+  visualizer = new Visualizer()
+  visualizer.draw(network)
   it 'can initialize', () ->
     expect(visualizer).toBeDefined()
   it 'can create nodes', () ->

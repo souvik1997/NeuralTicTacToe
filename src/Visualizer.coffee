@@ -2,17 +2,17 @@ vis = require('vis/dist/vis.js')
 NeuronType = require('./NeuronType').NeuronType
 Math = require('./MathPolyfill').Math
 class Visualizer # Wrapper for vis.js
-  constructor: (container, network) ->
+  constructor: (container, options) ->
     @container = container
-    @network = network
     @settings = {}
     @settings[NeuronType.generic] = 'rgb(132,245,124)'
     @settings[NeuronType.sensory] = 'rgb(170,189,89)'
     @settings[NeuronType.output] = 'rgb(142,142,180)'
-  createNodesAndEdges: () ->
+    @options = options
+  draw: (network) ->
     @nodes = []
     @edges = []
-    for neuron in @network.neurons
+    for neuron in network.neurons
       color = @settings[neuron.type]
       @nodes.push {id: neuron.id, color: color, label: neuron.text}
       for dendrite in neuron.dendrites
@@ -27,17 +27,15 @@ class Visualizer # Wrapper for vis.js
         else
           obj.color = 'rgb(120,90,190)'
         @edges.push obj
-  draw: () ->
     data = {
       nodes: @nodes,
       edges: @edges
     }
-    options =
-      physics:
-        timestep: 0.1
-
     if @container?
-      visnetwork = new vis.Network @container, data, options
+      @visnetwork = new vis.Network @container, data, @options
+  destroy: () ->
+    if @visnetwork?
+      @visnetwork.destroy()
 
 
 root = module.exports ? this

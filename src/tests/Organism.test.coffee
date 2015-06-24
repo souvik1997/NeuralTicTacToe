@@ -1,5 +1,6 @@
 Organism = require('../Organism').Organism
 Genome = require('../Genome').Genome
+describe = require('../JasmineShim').describe
 describe 'Organism', ->
   it 'can initialize', ->
     x = new Organism(new Genome())

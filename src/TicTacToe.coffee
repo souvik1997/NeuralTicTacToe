@@ -4,7 +4,7 @@ class TicTacToe
     @newGame()
 
   move: (r, c, player) ->
-    if @isAValidPosition(r, c)
+    if @isAValidPosition(r, c) and @board[r][c] == TicTacToe.player.empty
       @board[r][c] = player
       value = @_checkWin(r, c)
       if value != TicTacToe.player.empty

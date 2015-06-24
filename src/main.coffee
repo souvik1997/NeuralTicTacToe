@@ -33,6 +33,12 @@ jQuery(() ->
     if @visualizer
       @visualizer.destroy()
   )
+  $("#statusmodal-toggle").click( =>
+    $("#statusmodal").modal({show: true, backdrop: 'static', keyboard: false})
+  )
+  $("#statusmodal-close").click( =>
+    $("#statusmodal").modal('hide')
+  )
   @TicTacToe = new TicTacToe()
   @currentPlayer = TicTacToe.player.X
   playerO = new RandomTicTacToePlayer(@TicTacToe, TicTacToe.player.O)
@@ -86,7 +92,10 @@ jQuery(() ->
                 else TicTacToe.player.X)
         )
   # Actual simulation code
-  interval = (time, fn) -> setInterval(fn, time)
+  interval = (time, fn) -> setTimeout( ->
+    fn()
+    interval(time, fn)
+  , time)
   sensory_neurons = []
   output_neurons = []
   for r in [0..2]
@@ -115,6 +124,10 @@ jQuery(() ->
       hiddenlayer_deletion:
         probability: 0.5 * k
     }
+  log = (msg) ->
+    $("#statusmodal-ul").prepend("<li>#{msg}</li>")
+    if $("#statusmodal-ul li").length > 10
+      $("#statusmodal-ul li").last().remove()
   getStats = (organism) ->
     o_network = organism.genome.construct()
     game = new TicTacToe()
@@ -144,8 +157,8 @@ jQuery(() ->
       draws: 0
     }
     currentPlayer = TicTacToe.player.X
-    for x in [1..50]
-      randomTTTPlayer = new RandomTicTacToePlayer(game, random_player)
+    for x in [1..10]
+      randomTTTPlayer = new RandomTicTacToePlayer(game, random_player, 0.1)
       while game.state == TicTacToe.state.inProgress
         if random_player == currentPlayer
           randomTTTPlayer.move()
@@ -162,8 +175,8 @@ jQuery(() ->
                     r: r
                     c: c
                   })
-                moves.sort((a,b) -> b.priority - a.priority)
-                game.move(moves[0].r, moves[0].c, network_player)
+          moves.sort((a,b) -> b.priority - a.priority)
+          game.move(moves[0].r, moves[0].c, network_player)
         if (game.state == TicTacToe.state.xWin and
         network_player == TicTacToe.player.X) or
         (game.state == TicTacToe.state.oWin and
@@ -192,15 +205,30 @@ jQuery(() ->
     stats = getStats(child)
     child.fitness = 10*stats.wins+2*stats.draws-15*stats.losses
     generations[0].push(child)
-  interval 3000, ->
-    parents = generations[generations.length - 1]
+  interval 10, ->
+    parents = generations[0]
       .sort((a,b) -> b.fitness - a.fitness)
-    console.log("Fittest: #{parents[0].fitness}")
-    for x in [0..10]
-      child =
-        parents[0].mate(parents[1], getMutationOptions(
-          Math.sigmoid(100-generations.length)))
+    log("Fittest: #{parents[0].fitness}")
+    generations[0] = []
+    whattoadd = []
+    whattoadd.push(parents[0])
+    whattoadd.push(parents[1])
+    for x in [1..10]
+      if parents[0].isOfSameSpeciesAs(parents[1])
+        child =
+          parents[0].mate(parents[1], getMutationOptions(
+            Math.sigmoid(-parents[0].fitness/2)))
+        whattoadd.push(child)
+      else
+        child1 = parents[0].mate(parents[0], getMutationOptions(
+          Math.sigmoid(-parents[0].fitness/2)))
+        child2 = parents[1].mate(parents[1], getMutationOptions(
+          Math.sigmoid(-parents[1].fitness/2)))
+        whattoadd.push(child1)
+        whattoadd.push(child2)
+    for child in whattoadd
       stats = getStats(child)
       child.fitness = 10*stats.wins+2*stats.draws-15*stats.losses
+      generations[0].push(child)
 
 )

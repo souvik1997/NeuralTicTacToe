@@ -1,13 +1,7 @@
 class TicTacToe
   constructor: () ->
     @dimensions = {r: 3, c: 3}
-    @state = TicTacToe.state.inProgress
-    @board = []
-    for r in [1..@dimensions.r]
-      row = []
-      for c in [1..@dimensions.c]
-        row.push(TicTacToe.player.empty)
-      @board.push(row)
+    @newGame()
 
   move: (r, c, player) ->
     if @isAValidPosition(r, c)
@@ -26,6 +20,15 @@ class TicTacToe
     if not @isAValidPosition(r, c)
       return TicTacToe.player.null
     return @board[r][c]
+
+  newGame: () ->
+    @state = TicTacToe.state.inProgress
+    @board = []
+    for r in [1..@dimensions.r]
+      row = []
+      for c in [1..@dimensions.c]
+        row.push(TicTacToe.player.empty)
+      @board.push(row)
 
   _checkDraw: () ->
     if @state == TicTacToe.state.xWin or @state == TicTacToe.state.yWin
@@ -122,7 +125,7 @@ TicTacToe.state = {
   xWin: TicTacToe.player.X
   oWin: TicTacToe.player.O
   draw: 0
-  inProgress: 0
+  inProgress: -1
 }
 root = module.exports ? this
 root.TicTacToe = TicTacToe

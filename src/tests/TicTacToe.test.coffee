@@ -17,6 +17,11 @@ describe 'TicTacToe', ->
     expect(game.getPlayerAt(0,0)).toEqual(TicTacToe.player.empty)
     game.move(0, 0, TicTacToe.player.X)
     expect(game.getPlayerAt(0,0)).toEqual(TicTacToe.player.X)
+  it 'can get game state', ->
+    game = new TicTacToe()
+    expect(game.getPlayerAt(0,0)).toEqual(TicTacToe.player.empty)
+    state = game.move(0, 0, TicTacToe.player.X)
+    expect(state).toEqual(TicTacToe.state.inProgress)
   it 'can detect wins', ->
     game = new TicTacToe()
     game.board = [[x,x,_],

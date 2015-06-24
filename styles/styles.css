@@ -4,6 +4,33 @@ table {
 	border-collapse: collapse;
 	table-layout: fixed;
 }
+.tic-tac-toe-end {
+	position: absolute;
+	top: 0;
+	margin: -1%;
+	z-index: 10;
+	background-color: rgba(240, 240, 240, 0.9);
+	width: 102%;
+	height: 102%;
+	text-align: center;
+	display: none;
+}
+.tic-tac-toe-container {
+	position: relative;
+}
+.tic-tac-toe-end-container {
+	position: relative;
+	vertical-align: middle;
+	height: 100%;
+	padding-top: 33%;
+	padding-bottom: 37%;
+	text-align: center;
+}
+.tic-tac-toe-notification {
+	font-size: 4em;
+	font-weight: bold;
+	text-align: center;
+}
 td {
 	width: 33%;
 	padding-right: 2%;

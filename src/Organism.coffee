@@ -3,15 +3,12 @@ Math = require('./MathPolyfill').Math
 class Organism
   constructor: (genome) ->
     @genome = genome
+    @fitness = 0
 
   isOfSameSpeciesAs: (other) ->
     if other.genome.genes.length > @genome.genes.length
       return other.genome.differences(@genome) < Organism.speciesThreshold
     return @genome.differences(other.genome) < Organism.speciesThreshold
-
-  calculateFitness: (fitnessFunction) ->
-    if fitnessFunction? and typeof(fitnessFunction) == "function"
-      @fitness = fitnessFunction()
 
   mate: (other, options={}) ->
     if @isOfSameSpeciesAs(other)

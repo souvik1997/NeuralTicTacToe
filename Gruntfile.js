@@ -85,6 +85,13 @@ module.exports = function(grunt) {
         {
           'dist/css/module.css': ['node_modules/bootstrap/dist/**/*.css','!node_modules/bootstrap/dist/**/*.min.css', 'node_modules/vis/dist/**/*.css', '!node_modules/vis/dist/**/min.css', 'styles/**/*.css']
         }
+      },
+      recssmin:
+      {
+        files:
+        {
+          'dist/css/module.css': ['dist/css/module.css']
+        }
       }
     },
     copy: {
@@ -119,6 +126,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['clean:build', 'clean:tmp', 'jshint', 'coffeelint', 'cssmin:release', 'copy:html', 'copy:js', 'coffee:app']);
   grunt.registerTask('debug', ['default', 'coffee:tests', 'browserify', 'jasmine']);
-  grunt.registerTask('release', ['default', 'browserify', 'uglify', 'uncss:release']);
+  grunt.registerTask('release', ['default', 'browserify', 'uglify', 'uncss:release', 'cssmin:recssmin']);
 
 };

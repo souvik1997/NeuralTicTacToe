@@ -34,6 +34,7 @@ class Neuron
     return @findDendrite(neuron) != -1
 
   getOutput: ->
+    value = 1
     if @dendrites.length != 0
       value = (x.weight * x.neuron.getOutput() + @bias for x in @dendrites)
         .reduce((a,b) -> a+b)

@@ -7,7 +7,7 @@ describe 'Organism', ->
     expect(x).toBeDefined()
   it 'can have a fitness function', ->
     x = new Organism(new Genome())
-    x.calculateFitness(() -> 10)
+    x.fitness = 10
     expect(x.fitness).toEqual(10)
   it 'can determine if an organism is of the same species', ->
     x = new Organism(new Genome())
@@ -21,15 +21,15 @@ describe 'Organism', ->
   fitness values', ->
     x = new Organism(new Genome())
     y = new Organism(new Genome())
-    x.calculateFitness(() -> 10)
-    y.calculateFitness(() -> 11)
+    x.fitness = 10
+    y.fitness = 11
     x.genome.genes.push({to: 2, from: 1, weight: 0.5})
     z = x.mate(y)
     expect(z.genome.genes.length).toEqual(0)
     x = new Organism(new Genome())
     y = new Organism(new Genome())
-    x.calculateFitness(() -> 11)
-    y.calculateFitness(() -> 10)
+    x.fitness = 11
+    y.fitness = 10
     x.genome.genes.push({to: 2, from: 1, weight: 0.5})
     z = x.mate(y)
     expect(z.genome.genes.length).toEqual(1)
@@ -37,8 +37,8 @@ describe 'Organism', ->
   fitness values', ->
     x = new Organism(new Genome())
     y = new Organism(new Genome())
-    x.calculateFitness(() -> 10)
-    y.calculateFitness(() -> 11)
+    x.fitness = 10
+    y.fitness = 11
     x.genome.genes.push({empty: true}, {to: 2, from: 1, weight: 0.5})
     y.genome.genes.push({to: 3, from: 2, weight: 0.6},
       {to: 2, from: 1, weight: 0.5})
@@ -47,8 +47,8 @@ describe 'Organism', ->
     expect(z.genome.genes[0]).toEqual({to: 3, from: 2, weight: 0.6})
     x = new Organism(new Genome())
     y = new Organism(new Genome())
-    x.calculateFitness(() -> 11)
-    y.calculateFitness(() -> 10)
+    x.fitness = 11
+    y.fitness = 10
     x.genome.genes.push({empty: true}, {to: 2, from: 1, weight: 0.5})
     y.genome.genes.push({to: 3, from: 2, weight: 0.6},
       {to: 2, from: 1, weight: 0.5})
@@ -59,8 +59,8 @@ describe 'Organism', ->
   fitness values', ->
     x = new Organism(new Genome())
     y = new Organism(new Genome())
-    x.calculateFitness(() -> 10)
-    y.calculateFitness(() -> 11)
+    x.fitness = 10
+    y.fitness = 11
     x.genome.genes.push({to: 2, from: 1, weight: 0.5})
     y.genome.genes.push({to: 3, from: 2, weight: 0.6})
     z = x.mate(y, {fitInheritanceProbability: 1})
@@ -69,8 +69,8 @@ describe 'Organism', ->
   it 'can mutate', ->
     x = new Organism(new Genome())
     y = new Organism(new Genome())
-    x.calculateFitness(() -> 10)
-    y.calculateFitness(() -> 11)
+    x.fitness = 10
+    y.fitness = 11
     x.genome.genes.push({to: 2, from: 1, weight: 0.5})
     y.genome.genes.push({to: 3, from: 2, weight: 0.6})
     z = x.mate(y, {

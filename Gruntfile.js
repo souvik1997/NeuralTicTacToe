@@ -51,7 +51,7 @@ module.exports = function(grunt) {
         files: {
           'dist/js/module.js': ['tmp/js/**/*.js'],
         }
-      },
+      }
     },
     clean: {
       build: ['dist/'],
@@ -83,7 +83,7 @@ module.exports = function(grunt) {
       {
         files:
         {
-          'dist/css/module.css': ['styles/**/*.css', 'node_modules/bootstrap/dist/**/*.css','!node_modules/bootstrap/dist/**/*.min.css', 'node_modules/vis/dist/**/*.css', '!node_modules/vis/dist/**/min.css']
+          'dist/css/module.css': ['node_modules/bootstrap/dist/**/*.css','!node_modules/bootstrap/dist/**/*.min.css', 'node_modules/vis/dist/**/*.css', '!node_modules/vis/dist/**/min.css', 'styles/**/*.css']
         }
       }
     },

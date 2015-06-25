@@ -106,6 +106,12 @@ module.exports = function(grunt) {
         expand: true,
         src: 'src/**/*.js',
         dest: 'tmp/js/'
+      },
+      bootstrapfonts: {
+        flatten: true,
+        expand: true,
+        src: 'node_modules/bootstrap/dist/fonts/*',
+        dest: 'dist/fonts/'
       }
     }
   });
@@ -124,7 +130,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
 
 
-  grunt.registerTask('default', ['clean:build', 'clean:tmp', 'jshint', 'coffeelint', 'cssmin:release', 'copy:html', 'copy:js', 'coffee:app']);
+  grunt.registerTask('default', ['clean:build', 'clean:tmp', 'jshint', 'coffeelint', 'cssmin:release', 'copy:html', 'copy:bootstrapfonts', 'copy:js', 'coffee:app']);
   grunt.registerTask('debug', ['default', 'coffee:tests', 'browserify', 'jasmine']);
   grunt.registerTask('release', ['default', 'browserify', 'uglify', 'uncss:release', 'cssmin:recssmin']);
 

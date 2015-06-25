@@ -41,6 +41,24 @@ class NeuralNetwork
       @add(existing_neuron_next)
   delete: (index) ->
     neuron = @neurons[index]
+  prune: (preserve...) ->
+    visited = []
+    whattopreserve = []
+    for x in preserve
+      whattopreserve[x] = true
+    pruneHelper = (neuron, force) =>
+      if (force or neuron.dendrites.length > 0 or
+      whattopreserve[neuron.type]) and
+      not (o for o in visited when o.equals(neuron))[0]?
+        visited.push(neuron)
+        for n in neuron.dendrites
+          dendrite = n.neuron
+          value = @findInNetwork(dendrite)
+          if value != -1
+            pruneHelper(dendrite, true)
+    for neuron in @neurons
+      pruneHelper(neuron)
+    @neurons = visited
   checkCircularReference: (neuron, dendrite) ->
     marked = []
     onstack = []

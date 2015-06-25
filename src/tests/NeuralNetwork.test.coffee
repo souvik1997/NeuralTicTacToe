@@ -1,6 +1,7 @@
 NeuralNetwork = require('../NeuralNetwork').NeuralNetwork
 Neuron = require('../Neuron').Neuron
 SensoryNeuron = require('../Neuron').SensoryNeuron
+NeuronType = require('../NeuronType').NeuronType
 OutputNeuron = require('../Neuron').OutputNeuron
 describe = require('../JasmineShim').describe
 describe 'NeuralNetwork', ->
@@ -85,3 +86,17 @@ describe 'NeuralNetwork', ->
       for third in third_hidden_layer
         network.link(third, neuron)
     expect(network.neurons.length).toEqual(9+9+4+4+4)
+  it 'can prune the network of unlinked neurons', () ->
+    network_1 = new NeuralNetwork()
+    network_1.link(new SensoryNeuron(), new OutputNeuron())
+    network_1.add(new Neuron())
+    expect(network_1.neurons.length).toEqual(3)
+    network_1.prune()
+    expect(network_1.neurons.length).toEqual(2)
+    network_2 = new NeuralNetwork()
+    network_2.link(new SensoryNeuron(), new OutputNeuron())
+    network_2.add(new Neuron())
+    network_2.add(new SensoryNeuron())
+    expect(network_2.neurons.length).toEqual(4)
+    network_2.prune(NeuronType.sensory)
+    expect(network_2.neurons.length).toEqual(3)

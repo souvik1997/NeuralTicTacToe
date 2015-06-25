@@ -94,7 +94,6 @@ class Trainer
       parents = generation
         .sort((a,b) -> b.fitness - a.fitness)
       generation = []
-      console.log("Fittest: #{parents[0].fitness}")
       whattoadd = []
       whattoadd.push(parents[0])
       whattoadd.push(parents[1])
@@ -115,6 +114,9 @@ class Trainer
         stats = getStats(child)
         child.fitness = 10*stats.wins+2*stats.draws-15*stats.losses
         generation.push(child)
+    parents = generation
+      .sort((a,b) -> b.fitness - a.fitness)
+    console.log("Fittest: #{parents[0].fitness}")
     @network = parents[0].genome.construct()
 
 root = module.exports ? this

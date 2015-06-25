@@ -1,5 +1,5 @@
 Neuron = require('./Neuron').Neuron
-jQuery = require('jquery')
+extend = require('node.extend')
 class NeuralNetwork
   constructor: () ->
     @neurons = []
@@ -82,7 +82,7 @@ class NeuralNetwork
     return cyclic
 
   clone: () ->
-    jQuery.extend true, {}, @
+    extend(true, {}, @)
 
 root = module.exports ? this
 root.NeuralNetwork = NeuralNetwork

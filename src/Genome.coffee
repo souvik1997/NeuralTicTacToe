@@ -5,7 +5,7 @@ OutputNeuron = require('./Neuron').OutputNeuron
 Visualizer = require('./Visualizer').Visualizer
 NeuralNetwork = require('./NeuralNetwork').NeuralNetwork
 Math = require('./MathPolyfill').Math
-jQuery = require('jquery')
+extend = require('node.extend')
 class Genome
   constructor: () ->
     @genes = []
@@ -138,7 +138,7 @@ class Genome
     return changed
 
   clone: () ->
-    jQuery.extend true, {}, @
+    extend(true, {}, @)
 
   equals: (other) ->
     return @differences(other) == 0

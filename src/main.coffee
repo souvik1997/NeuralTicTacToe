@@ -6,6 +6,7 @@ NeuralNetwork = require('./NeuralNetwork').NeuralNetwork
 Genome = require('./Genome').Genome
 TicTacToe = require('./TicTacToe').TicTacToe
 RandomTicTacToePlayer = require('./RandomTicTacToePlayer').RandomTicTacToePlayer
+NeuralTicTacToePlayer = require('./NeuralTicTacToePlayer').NeuralTicTacToePlayer
 Organism = require('./Organism').Organism
 Math = require('./MathPolyfill').Math
 Trainer = require('./Trainer').Trainer
@@ -76,6 +77,8 @@ jQuery(() ->
       fitness_spline_chart.series[0].addPoint([numberOfGenerationsSimulated]
         .concat(e.data.statistics.fitnessValues), true,
         numberOfGenerationsSimulated > 10)
+      playerO.network = network
+      playerO.setupSensors()
       if trainerEnabled
         worker.postMessage({genome: e.data.genome,
         options: mutation_options})
@@ -120,7 +123,8 @@ jQuery(() ->
   )
   game = new TicTacToe()
   currentPlayer = TicTacToe.player.X
-  playerO = new RandomTicTacToePlayer(game, TicTacToe.player.O)
+  playerO = new NeuralTicTacToePlayer(game, TicTacToe.player.O, network)
+  playerO.setupSensors()
   # Set up events for tic tac toe buttons
   updateGrid = (r, c) ->
     $("#i#{r}#{c}").html(

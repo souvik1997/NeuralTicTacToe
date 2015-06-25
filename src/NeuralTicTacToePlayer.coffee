@@ -35,6 +35,7 @@ class NeuralTicTacToePlayer
             })
     moves.sort((a,b) -> b.priority - a.priority)
     @game.move(moves[0].r, moves[0].c, @myplayer)
+    return {r: moves[0].r, c: moves[0].c}
 
 
 root = module.exports ? this

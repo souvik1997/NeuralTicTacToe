@@ -6,7 +6,7 @@ module.exports = (self) ->
     _genome.genes = e.data.genome.genes
     network = _genome.construct()
     trainer = new Trainer(network)
-    trainer.train(1)
+    stats = trainer.train(1)
     _genome = new Genome()
     _genome.deconstruct(trainer.network)
-    postMessage({genome: _genome})
+    postMessage({genome: _genome, statistics: stats})

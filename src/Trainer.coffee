@@ -90,6 +90,11 @@ class Trainer
     ancestral_genome.deconstruct(@network)
     generation = [new Organism(ancestral_genome),
       new Organism(ancestral_genome)]
+    return_statistics = {}
+    return_statistics.fitnessValues = []
+    return_statistics.wins = 0
+    return_statistics.losses = 0
+    return_statistics.draws = 0
     for gen in [1..numgen]
       parents = generation
         .sort((a,b) -> b.fitness - a.fitness)
@@ -113,11 +118,15 @@ class Trainer
       for child in whattoadd
         stats = getStats(child)
         child.fitness = 10*stats.wins+2*stats.draws-15*stats.losses
+        return_statistics.fitnessValues.push(child.fitness)
+        return_statistics.wins += stats.wins
+        return_statistics.losses += stats.losses
+        return_statistics.draws += stats.draws
         generation.push(child)
     parents = generation
       .sort((a,b) -> b.fitness - a.fitness)
-    console.log("Fittest: #{parents[0].fitness}")
     @network = parents[0].genome.construct()
+    return return_statistics
 
 root = module.exports ? this
 root.Trainer = Trainer

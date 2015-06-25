@@ -124,13 +124,13 @@ jQuery(() ->
   currentPlayer = TicTacToe.player.X
   playerO = new RandomTicTacToePlayer(game, TicTacToe.player.O)
   # Set up events for tic tac toe buttons
-  updateGrid = (r, c) =>
+  updateGrid = (r, c) ->
     $("#i#{r}#{c}").html(
       if currentPlayer == TicTacToe.player.X then "&#x2715;"
       else if currentPlayer == TicTacToe.player.O then "O"
       else "&nbsp;"
     )
-  showState = () =>
+  showState = () ->
     result = game.state
     if result == TicTacToe.state.draw
       $(".tic-tac-toe-notification").html("Draw!")
@@ -143,7 +143,7 @@ jQuery(() ->
       $(".tic-tac-toe-end").show()
     return result
 
-  $("#restart-btn").click(() =>
+  $("#restart-btn").click(() ->
     game.newGame()
     currentPlayer = TicTacToe.player.X
     for r in [0..2]
@@ -153,8 +153,8 @@ jQuery(() ->
   )
   for r in [0..2]
     for c in [0..2]
-      do (r, c) =>
-        $("#i#{r}#{c}").click(() =>
+      do (r, c) ->
+        $("#i#{r}#{c}").click(() ->
           if game.getPlayerAt(r, c) == TicTacToe.player.empty
             result = game.move(r, c, currentPlayer)
             updateGrid(r, c)

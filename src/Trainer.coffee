@@ -4,24 +4,32 @@ Organism = require('./Organism').Organism
 Genome = require('./Genome').Genome
 Math = require('./MathPolyfill').Math
 class Trainer
-  constructor: (network) ->
+  constructor: (network, options) ->
     @network = network
+    @options = options
   train: (numgen=10) ->
-    getMutationOptions = (k) -> {
-      fitInheritanceProbability: 0.9
-      mutate:
-        weightchange:
-          probability: 0.9 * k
-          scale: 10
-        reroute:
-          probability: 0.08 * k
-        route_insertion:
-          probability: 0.3 * k
-        route_deletion:
-          probability: 0.01 * k
-        hiddenlayer_deletion:
-          probability: 0.02 * k
-      }
+    getMutationOptions = (k) =>
+      opts = {}
+      opts.fitInheritanceProbability = @options.fitInheritanceProbability
+      opts.mutate = {}
+      opts.mutate.weightchange = {}
+      opts.mutate.reroute = {}
+      opts.mutate.route_insertion = {}
+      opts.mutate.route_deletion = {}
+      opts.mutate.hiddenlayer_deletion = {}
+      opts.mutate.weightchange.probability = @options
+        .mutate.weightchange.probability * k
+      opts.mutate.weightchange.scale = @options
+        .mutate.weightchange.scale * k
+      opts.mutate.reroute.probability = @options
+        .mutate.reroute.probability * k
+      opts.mutate.route_insertion.probability = @options
+        .mutate.route_insertion.probability * k
+      opts.mutate.route_deletion.probability = @options
+        .mutate.route_deletion.probability * k
+      opts.mutate.hiddenlayer_deletion.probability = @options
+        .mutate.hiddenlayer_deletion.probability * k
+      return opts
     getStats = (organism) ->
       o_network = organism.genome.construct()
       game = new TicTacToe()
@@ -117,7 +125,10 @@ class Trainer
           whattoadd.push(child2)
       for child in whattoadd
         stats = getStats(child)
-        child.fitness = 10*stats.wins+2*stats.draws-15*stats.losses
+        child.fitness =
+          @options.weight.win*stats.wins +
+          @options.weight.draw*stats.draws +
+          @options.weight.loss*stats.losses
         return_statistics.fitnessValues.push(child.fitness)
         return_statistics.wins += stats.wins
         return_statistics.losses += stats.losses

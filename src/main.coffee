@@ -25,6 +25,26 @@ jQuery(() ->
   trainer = new Trainer(network)
   trainerEnabled = false
   numberOfGenerationsSimulated = 0
+  mutation_options =
+  {
+    fitInheritanceProbability: 0.9
+    weight:
+      win: 10
+      draw: 0
+      loss: -10
+    mutate:
+      weightchange:
+        probability: 0.6
+        scale: 5
+      reroute:
+        probability: 0.3
+      route_insertion:
+        probability: 0.2
+      route_deletion:
+        probability: 0.15
+      hiddenlayer_deletion:
+        probability: 0.1
+  }
   fitness_spline_chart = new Highcharts.Chart(
     {
       chart:
@@ -59,7 +79,8 @@ jQuery(() ->
         .concat(e.data.statistics.fitnessValues), true,
         numberOfGenerationsSimulated > 10)
       if trainerEnabled
-        worker.postMessage({genome: e.data.genome})
+        worker.postMessage({genome: e.data.genome,
+        options: mutation_options})
   container = $("#mynetwork")[0]
   visualizer = new Visualizer(container, {
     physics:
@@ -89,7 +110,7 @@ jQuery(() ->
       trainerEnabled = true
       _genome = new Genome()
       _genome.deconstruct(network)
-      worker.postMessage({genome: _genome})
+      worker.postMessage({genome: _genome, options: mutation_options})
       console.log "Start"
       $("#trainer-button span").removeClass("glyphicon-play")
       $("#trainer-button span").addClass("glyphicon-pause")

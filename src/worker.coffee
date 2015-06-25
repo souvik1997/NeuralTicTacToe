@@ -5,7 +5,7 @@ module.exports = (self) ->
     _genome = new Genome()
     _genome.genes = e.data.genome.genes
     network = _genome.construct()
-    trainer = new Trainer(network)
+    trainer = new Trainer(network, e.data.options)
     stats = trainer.train(1)
     _genome = new Genome()
     _genome.deconstruct(trainer.network)

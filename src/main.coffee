@@ -1,4 +1,3 @@
-jQuery = require('jquery')
 Neuron = require('./Neuron').Neuron
 SensoryNeuron = require('./Neuron').SensoryNeuron
 OutputNeuron = require('./Neuron').OutputNeuron
@@ -13,13 +12,12 @@ Trainer = require('./Trainer').Trainer
 JasmineEnabled = require('./JasmineShim').jasmineEnabled
 Work = require('webworkify')
 statistics = require('simple-statistics')
-if JasmineEnabled
+if not window? or JasmineEnabled
   return
-if window?
-  window.$ = window.jQuery = jQuery
-  require('bootstrap/dist/js/npm')
-  require('highcharts-release/highcharts.src.js')
-  require('highcharts-release/highcharts-more.src.js')
+window.$ = window.jQuery = jQuery = require('jquery')
+require('bootstrap/dist/js/npm')
+require('highcharts-release/highcharts.src.js')
+require('highcharts-release/highcharts-more.src.js')
 jQuery(() ->
   network = new NeuralNetwork()
   trainer = new Trainer(network)

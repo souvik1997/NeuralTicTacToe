@@ -1,4 +1,5 @@
 RandomTicTacToePlayer = require('./RandomTicTacToePlayer').RandomTicTacToePlayer
+NeuralTicTacToePlayer = require('./NeuralTicTacToePlayer').NeuralTicTacToePlayer
 TicTacToe = require('./TicTacToe').TicTacToe
 Organism = require('./Organism').Organism
 Genome = require('./Genome').Genome
@@ -39,46 +40,21 @@ class Trainer
       else
         network_player = TicTacToe.player.O
         random_player = TicTacToe.player.X
-      for r in [0..2]
-        for c in [0..2]
-          sensory_id = 10+r+c/10
-          do (r,c) ->
-            sensor = o_network.findInNetworkByID(sensory_id)
-            if sensor != -1
-              sensor.on('sense', ->
-                player = game.getPlayerAt(r, c)
-                if player == network_player
-                  return 1
-                if player == random_player
-                  return -1
-                return 0
-              )
       stats = {
         wins: 0
         losses: 0
         draws: 0
       }
       currentPlayer = TicTacToe.player.X
+      randomTTTPlayer = new RandomTicTacToePlayer(game, random_player, 1)
+      neuralPlayer = new NeuralTicTacToePlayer(game, network_player, o_network)
+      neuralPlayer.setupSensors()
       for x in [1..100]
-        randomTTTPlayer = new RandomTicTacToePlayer(game, random_player, 1)
         while game.state == TicTacToe.state.inProgress
           if random_player == currentPlayer
             randomTTTPlayer.move()
           else if network_player == currentPlayer
-            moves = []
-            for r in [0..2]
-              for c in [0..2]
-                if game.getPlayerAt(r, c) == TicTacToe.player.empty
-                  output_id = 20+r+c/10
-                  output = o_network.findInNetworkByID(output_id)
-                  if output != -1
-                    moves.push({
-                      priority: output.getOutput()
-                      r: r
-                      c: c
-                    })
-            moves.sort((a,b) -> b.priority - a.priority)
-            game.move(moves[0].r, moves[0].c, network_player)
+            neuralPlayer.move()
           if (game.state == TicTacToe.state.xWin and
           network_player == TicTacToe.player.X) or
           (game.state == TicTacToe.state.oWin and

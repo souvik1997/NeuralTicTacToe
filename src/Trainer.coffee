@@ -85,14 +85,15 @@ class Trainer
             else TicTacToe.player.X)
         game.newGame()
       return stats
-    generations = []
+    generation = []
     ancestral_genome = new Genome()
     ancestral_genome.deconstruct(@network)
-    generations[0] = [new Organism(ancestral_genome),
+    generation = [new Organism(ancestral_genome),
       new Organism(ancestral_genome)]
     for gen in [1..numgen]
-      parents = generations[generations.length - 1]
+      parents = generation
         .sort((a,b) -> b.fitness - a.fitness)
+      generation = []
       console.log("Fittest: #{parents[0].fitness}")
       whattoadd = []
       whattoadd.push(parents[0])
@@ -113,9 +114,7 @@ class Trainer
       for child in whattoadd
         stats = getStats(child)
         child.fitness = 10*stats.wins+2*stats.draws-15*stats.losses
-        generations[generations.length - 1].push(child)
-    parents = generations[generations.length - 1]
-      .sort((a,b) -> b.fitness - a.fitness)
+        generation.push(child)
     @network = parents[0].genome.construct()
 
 root = module.exports ? this

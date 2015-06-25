@@ -100,3 +100,8 @@ describe 'NeuralNetwork', ->
     expect(network_2.neurons.length).toEqual(4)
     network_2.prune(NeuronType.sensory)
     expect(network_2.neurons.length).toEqual(3)
+    network_3 = new NeuralNetwork()
+    network_3.link(new Neuron(), new Neuron())
+    expect(network_3.neurons.length).toEqual(2)
+    network_3.prune()
+    expect(network_3.neurons.length).toEqual(2)

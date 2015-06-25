@@ -15,17 +15,18 @@ describe 'Genome', ->
   it 'can initialize', () ->
     expect(genome).toBeDefined()
   it 'can deconstruct a network', () ->
-    expect(genome.genes[0].id).toEqual(1)
-    expect(genome.genes[0].text).toEqual("neuron_1")
+    expect(genome.genes[0].id).toEqual(2)
+    expect(genome.genes[0].text).toEqual("neuron_2")
     expect(genome.genes[0].type).toEqual(NeuronType.generic)
-    expect(genome.genes[0].bias).toEqual(12)
-    expect(genome.genes[1].id).toEqual(2)
-    expect(genome.genes[1].text).toEqual("neuron_2")
-    expect(genome.genes[1].type).toEqual(NeuronType.generic)
-    expect(genome.genes[1].bias).toEqual(13)
-    expect(genome.genes[2].weight).toEqual(0.2)
-    expect(genome.genes[2].to).toEqual(2)
-    expect(genome.genes[2].from).toEqual(1)
+    expect(genome.genes[0].bias).toEqual(13)
+    expect(genome.genes[2].id).toEqual(1)
+    expect(genome.genes[2].text).toEqual("neuron_1")
+    expect(genome.genes[2].type).toEqual(NeuronType.generic)
+    expect(genome.genes[2].bias).toEqual(12)
+    expect(genome.genes[1].weight).toEqual(0.2)
+    expect(genome.genes[1].to).toEqual(2)
+    expect(genome.genes[1].from).toEqual(1)
+    console.log JSON.stringify genome.genes
   it 'can construct all neurons in a new network', () ->
     for n in new_network.neurons
       expect(network.isInNetworkByID(n.id)).toBeTruthy()

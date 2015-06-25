@@ -9,8 +9,10 @@ jQuery = require('jquery')
 class Genome
   constructor: () ->
     @genes = []
-  deconstruct: (network) ->
+  deconstruct: (network, skip_prune=false) ->
     @genes = []
+    if not skip_prune
+      network.prune(NeuronType.sensory, NeuronType.output)
     for neuron in network.neurons
       @genes.push {
         id: neuron.id,
@@ -21,7 +23,7 @@ class Genome
       for dendrite in neuron.dendrites
         @genes.push {weight: dendrite.weight,
         from: dendrite.neuron.id, to: neuron.id}
-  construct: () ->
+  construct: (skip_prune=false) ->
     network = new NeuralNetwork()
     second_pass = []
     for gene in @genes
@@ -41,6 +43,8 @@ class Genome
         to = network.findInNetworkByID(gene.to)
         from = network.findInNetworkByID(gene.from)
         network.link(from, to, gene.weight)
+    if not skip_prune
+      network.prune(NeuronType.sensory, NeuronType.output)
     return network
   mutate: (options) ->
     changed = []

@@ -22,8 +22,8 @@ class IdealTicTacToePlayer
       ret = 0
       if game.state != TicTacToe.state.inProgress
         return score(game)
-      for r in [0..2]
-        for c in [0..2]
+      for r in [0..@game.dimensions.r-1]
+        for c in [0..@game.dimensions.c-1]
           do (r,c) =>
             if game.getPlayerAt(r,c) == TicTacToe.player.empty
               clone_game = game.clone()
@@ -36,8 +36,8 @@ class IdealTicTacToePlayer
           if alpha >= beta
             break
       return ret
-    for r in [0..2]
-      for c in [0..2]
+    for r in [0..@game.dimensions.r-1]
+      for c in [0..@game.dimensions.c-1]
         do (r,c) =>
           if @game.getPlayerAt(r,c) == TicTacToe.player.empty
             cloned_game = @game.clone()

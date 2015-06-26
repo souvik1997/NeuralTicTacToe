@@ -1,8 +1,7 @@
 table {
-	width: 69vh;
-	height: 63vh;
-	border-collapse: collapse;
+	border-collapse: separate;
 	table-layout: fixed;
+	border-spacing: 3px;
 }
 .tic-tac-toe-end {
 	position: absolute;
@@ -31,26 +30,10 @@ table {
 	font-weight: bold;
 	text-align: center;
 }
-td {
-	width: 33%;
-	padding-right: 2%;
-}
-td:last-child {
-	padding-right: 0%;
-}
-tr {
-	padding-bottom: 2%;
-}
-tr:last-child {
-	padding-bottom: 0%;
-}
 .tic-tac-toe-btn {
-	width: 100%;
-	height: 100%;
-	margin: 2% auto;
 	background-color: #ddd;
 	transition: background linear 100ms;
-	font-size: 5em;
+	font-size: 4em;
 	font-weight: bold;
 	text-align: center;
 }

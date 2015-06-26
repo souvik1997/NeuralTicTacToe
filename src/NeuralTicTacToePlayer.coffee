@@ -6,8 +6,8 @@ class NeuralTicTacToePlayer
     @network = network
 
   setupSensors: () ->
-    for r in [0..2]
-      for c in [0..2]
+    for r in [0..@game.dimensions.r-1]
+      for c in [0..@game.dimensions.c-1]
         sensory_id = 10+r+c/10
         do (r,c) =>
           sensor = @network.findInNetworkByID(sensory_id)
@@ -22,8 +22,8 @@ class NeuralTicTacToePlayer
             )
   move: () ->
     moves = []
-    for r in [0..2]
-      for c in [0..2]
+    for r in [0..@game.dimensions.r-1]
+      for c in [0..@game.dimensions.c-1]
         if @game.getPlayerAt(r, c) == TicTacToe.player.empty
           output_id = 20+r+c/10
           output = @network.findInNetworkByID(output_id)

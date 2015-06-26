@@ -31,7 +31,7 @@ Trainer.trainNEAT = (network, options, numberOfGenerationsSimulated
     return opts
   getStats = (organism) ->
     o_network = organism.genome.construct()
-    game = new TicTacToe()
+    game = new TicTacToe(options.dimensions.rows, options.dimensions.columns)
     if Math.random() < 0.5
       network_player = TicTacToe.player.X
       random_player = TicTacToe.player.O
@@ -44,10 +44,7 @@ Trainer.trainNEAT = (network, options, numberOfGenerationsSimulated
       draws: 0
     }
     currentPlayer = TicTacToe.player.X
-    randomTTTPlayer = new RandomTicTacToePlayer(game, random_player,
-      Math.sigmoid((numberOfGenerationsSimulated/
-      Math.abs(options.randomPlayerDifficulty)) +
-      options.randomPlayerDifficulty))
+    randomTTTPlayer = new RandomTicTacToePlayer(game, random_player,0)
     neuralPlayer = new NeuralTicTacToePlayer(game, network_player,
       o_network)
     neuralPlayer.setupSensors()

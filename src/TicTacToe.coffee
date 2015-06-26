@@ -1,7 +1,7 @@
 extend = require('node.extend')
 class TicTacToe
-  constructor: () ->
-    @dimensions = {r: 3, c: 3}
+  constructor: (rows = 3, columns = 3) ->
+    @dimensions = {r: rows, c: columns}
     @newGame()
     @currentPlayer = TicTacToe.player.X
 
@@ -126,13 +126,11 @@ class TicTacToe
     .filter((x) => x == @getPlayerAt(r,c))[0]
     return status ? TicTacToe.player.empty
   clone: () ->
-    g = new TicTacToe()
+    g = new TicTacToe(@dimensions.r, @dimensions.c)
     for r in [0..@dimensions.r-1]
       for c in [0..@dimensions.c-1]
         g.board[r][c] = @board[r][c]
     g.state = @state
-    g.dimensions.r = @dimensions.r
-    g.dimensions.c = @dimensions.c
     g.currentPlayer = @currentPlayer
     return g
 TicTacToe.player = {

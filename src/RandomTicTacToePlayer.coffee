@@ -14,8 +14,8 @@ class RandomTicTacToePlayer
       other_player = TicTacToe.player.O
     else
       other_player = TicTacToe.player.X
-    for r in [0..2]
-      for c in [0..2]
+    for r in [0..@game.dimensions.r-1]
+      for c in [0..@game.dimensions.c-1]
         if @game.getPlayerAt(r, c) == TicTacToe.player.empty
           possible_moves.push({r: r, c: c})
           @game.board[r][c] = @myplayer

@@ -23,30 +23,40 @@ jQuery(() ->
   network = new NeuralNetwork()
   trainerEnabled = false
   numberOfGenerationsSimulated = 0
-  training_options =
+  options =
   {
-    fitInheritanceProbability: 1
-    numToCreate: 20
-    gamesToPlay: 20
-    target: 4000
-    randomPlayerDifficulty: -10
-    weight:
-      win: 10
-      draw: 0
-      loss: -10
-    mutate:
-      weightchange:
-        probability: 0.9
-        scale: 10
-      reroute:
-        probability: 0.8
-      route_insertion:
-        probability: 0.8
-      route_deletion:
-        probability: 0
-      hiddenlayer_deletion:
-        probability: 0
+    game:
+      opponent: "ideal"
+      dimensions:
+        rows: 2
+        columns: 2
+    training:
+      dimensions:
+        rows: 2
+        columns: 2
+      fitInheritanceProbability: 1
+      numToCreate: 20
+      gamesToPlay: 20
+      target: 4000
+      randomPlayerDifficulty: -10
+      weight:
+        win: 10
+        draw: 0
+        loss: -10
+      mutate:
+        weightchange:
+          probability: 0.9
+          scale: 10
+        reroute:
+          probability: 0.8
+        route_insertion:
+          probability: 0.8
+        route_deletion:
+          probability: 0
+        hiddenlayer_deletion:
+          probability: 0
   }
+  
   fitness_boxplot_chart = new Highcharts.Chart(
     {
       chart:
@@ -139,7 +149,7 @@ jQuery(() ->
       worker.onmessage = messageHandler
       worker.postMessage({
         network: network
-        options: training_options
+        options: options.training
         numberOfGenerationsSimulated: numberOfGenerationsSimulated
       })
       trainerEnabled = true
@@ -153,7 +163,8 @@ jQuery(() ->
       $("#trainer-button span").removeClass("glyphicon-pause")
       $("#trainer-button span").addClass("glyphicon-play")
   )
-  game = new TicTacToe()
+  game = new TicTacToe(options.game.dimensions.rows,
+    options.game.dimensions.columns)
   currentPlayer = TicTacToe.player.X
   #opponent = new NeuralTicTacToePlayer(game, TicTacToe.player.O, network)
   #opponent.setupSensors()
@@ -180,8 +191,8 @@ jQuery(() ->
 
   $("#restart-btn").click(() ->
     game.newGame()
-    for r in [0..2]
-      for c in [0..2]
+    for r in [0..options.game.dimensions.rows-1]
+      for c in [0..options.game.dimensions.columns-1]
         $("#i#{r}#{c}").html("&nbsp;")
     $(".tic-tac-toe-end").hide()
     if currentPlayer == TicTacToe.player.O
@@ -192,10 +203,16 @@ jQuery(() ->
         then TicTacToe.player.O
         else TicTacToe.player.X)
   )
-  for r in [0..2]
-    for c in [0..2]
+  $("#game-board").empty()
+  board = $("#game-board").detach()
+  for r in [0..options.game.dimensions.rows-1]
+    board.append($("<tr id='game-row-#{r}'></tr>"))
+    for c in [0..options.game.dimensions.columns-1]
       do (r, c) ->
-        $("#i#{r}#{c}").click(() ->
+        unit = $("<td><button class='btn tic-tac-toe-btn'
+          id='i#{r}#{c}'>&nbsp;</button></td>")
+        
+        unit.click(() ->
           if game.getPlayerAt(r, c) == TicTacToe.player.empty
             result = game.move(r, c, currentPlayer)
             updateGrid(r, c)
@@ -213,10 +230,19 @@ jQuery(() ->
                 else TicTacToe.player.X)
               showState()
         )
+        size = 75/Math.max(options.game.dimensions.columns,
+          options.game.dimensions.rows)
+        unit.find(".btn").css("width","#{size}vh")
+        unit.find(".btn").css("height","#{size}vh")
+        board.find("#game-row-#{r}").append(unit)
+  $(".tic-tac-toe-container").append(board)
+  for r in [0..options.game.dimensions.rows-1]
+    for c in [0..options.game.dimensions.columns-1]
+      $("#i#{r}#{c}").css("font-size", ""+($("#i#{r}#{c}").width() * 0.9))
   sensory_neurons = []
   output_neurons = []
-  for r in [0..2]
-    for c in [0..2]
+  for r in [0..options.game.dimensions.rows-1]
+    for c in [0..options.game.dimensions.columns-1]
       sensory_neurons.push new SensoryNeuron(
         text: "("+r+","+c+")",
         id:10+r+c/10)

@@ -105,3 +105,12 @@ describe 'NeuralNetwork', ->
     expect(network_3.neurons.length).toEqual(2)
     network_3.prune()
     expect(network_3.neurons.length).toEqual(2)
+  it 'can create a new network from existing data', () ->
+    network_1 = new NeuralNetwork()
+    network_1.link(new SensoryNeuron(), new OutputNeuron())
+    network_1.add(new Neuron())
+    expect(network_1.neurons.length).toEqual(3)
+    data = JSON.parse JSON.stringify network_1
+    expect(data.add).not.toBeDefined()
+    network_2 = NeuralNetwork.fromArray(data)
+    expect(network_1).toEqual(network_2)

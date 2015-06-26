@@ -1,4 +1,7 @@
 Neuron = require('./Neuron').Neuron
+OutputNeuron = require('./Neuron').OutputNeuron
+SensoryNeuron = require('./Neuron').SensoryNeuron
+NeuronType = require('./NeuronType').NeuronType
 extend = require('node.extend')
 class NeuralNetwork
   constructor: () ->
@@ -83,6 +86,27 @@ class NeuralNetwork
 
   clone: () ->
     extend(true, {}, @)
+
+NeuralNetwork.fromArray = (arr) ->
+  network = new NeuralNetwork()
+  helper = (x) ->
+    if x.type == NeuronType.generic
+      neuron = new Neuron()
+    if x.type == NeuronType.output
+      neuron = new OutputNeuron()
+    if x.type == NeuronType.sensory
+      neuron = new SensoryNeuron()
+    neuron.id = x.id
+    neuron.text = x.text
+    neuron.bias = x.bias
+    neuron.dendrites = x.dendrites
+    for ds, i in neuron.dendrites
+      neuron.dendrites[i].neuron =
+        helper(ds.neuron)
+    return neuron
+  for a in arr.neurons
+    network.add(helper(a))
+  return network
 
 root = module.exports ? this
 root.NeuralNetwork = NeuralNetwork

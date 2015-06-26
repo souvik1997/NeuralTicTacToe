@@ -91,27 +91,21 @@ jQuery(() ->
   )
   worker = undefined
   messageHandler = (e) ->
-    if trainerEnabled and e.data.continue
-      worker.postMessage({genome: e.data.genome,
-      options: training_options})
-    else if not e.data.continue
-      _genome = new Genome()
-      _genome.genes = e.data.genome.genes
-      network = _genome.construct()
-      numberOfGenerationsSimulated += e.data.delta
-      fitness_boxplot_chart.series[0].addPoint([numberOfGenerationsSimulated]
-        .concat(e.data.statistics.fitnessValues), true,
-        fitness_boxplot_chart.series[0].data.length > 10)
-      total = e.data.statistics.best.wins + e.data.statistics.best.draws +
-        e.data.statistics.best.losses
-      wdl_current_chart.series[0].data[0].update(
-        e.data.statistics.best.wins/total * 100)
-      wdl_current_chart.series[0].data[1].update(
-        e.data.statistics.best.draws/total * 100)
-      wdl_current_chart.series[0].data[2].update(
-        e.data.statistics.best.losses/total * 100)
-      playerO.network = network
-      playerO.setupSensors()
+    network = NeuralNetwork.fromArray(e.data.network)
+    numberOfGenerationsSimulated += e.data.delta
+    fitness_boxplot_chart.series[0].addPoint([numberOfGenerationsSimulated]
+      .concat(e.data.statistics.fitnessValues), true,
+      fitness_boxplot_chart.series[0].data.length > 10)
+    total = e.data.statistics.best.wins + e.data.statistics.best.draws +
+      e.data.statistics.best.losses
+    wdl_current_chart.series[0].data[0].update(
+      e.data.statistics.best.wins/total * 100)
+    wdl_current_chart.series[0].data[1].update(
+      e.data.statistics.best.draws/total * 100)
+    wdl_current_chart.series[0].data[2].update(
+      e.data.statistics.best.losses/total * 100)
+    playerO.network = network
+    playerO.setupSensors()
     
   container = $("#mynetwork")[0]
   visualizer = new Visualizer(container, {
@@ -139,13 +133,11 @@ jQuery(() ->
   )
   $("#trainer-button").click( ->
     if not trainerEnabled #play → pause
-      _genome = new Genome()
-      _genome.deconstruct(network)
       worker = undefined
       worker = Work(require('./worker'))
       worker.onmessage = messageHandler
       worker.postMessage({
-        genome: _genome
+        network: network
         options: training_options
         numberOfGenerationsSimulated: numberOfGenerationsSimulated
       })

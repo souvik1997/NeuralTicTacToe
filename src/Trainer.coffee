@@ -109,10 +109,15 @@ class Trainer
         return_statistics.wins += stats.wins
         return_statistics.losses += stats.losses
         return_statistics.draws += stats.draws
+        child.stats = stats # keep stats along with object
         generation.push(child)
     parents = generation
       .sort((a,b) -> b.fitness - a.fitness)
     @network = parents[0].genome.construct()
+    return_statistics.best = {}
+    return_statistics.best.wins = parents[0].stats.wins
+    return_statistics.best.draws = parents[0].stats.draws
+    return_statistics.best.losses = parents[0].stats.losses
     return return_statistics
 
 root = module.exports ? this

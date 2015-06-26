@@ -26,33 +26,33 @@ jQuery(() ->
   numberOfGenerationsSimulated = 0
   mutation_options =
   {
-    fitInheritanceProbability: 0.9
+    fitInheritanceProbability: 1
     weight:
       win: 10
       draw: 0
       loss: -10
     mutate:
       weightchange:
-        probability: 0.6
+        probability: 0.8
         scale: 5
       reroute:
-        probability: 0.3
+        probability: 0.5
       route_insertion:
-        probability: 0.2
+        probability: 0.7
       route_deletion:
-        probability: 0.15
+        probability: 0.03
       hiddenlayer_deletion:
-        probability: 0.1
+        probability: 0.05
   }
-  fitness_spline_chart = new Highcharts.Chart(
+  fitness_boxplot_chart = new Highcharts.Chart(
     {
       chart:
         type: "boxplot"
         zoomType: "x"
         animation: Highcharts.svg
-        renderTo: "fitness-spline-chart"
+        renderTo: "fitness-boxplot-chart"
       title:
-        text: "Fitness"
+        text: "Fitness vs. Generation"
       xAxis:
         text: "Generation"
         allowDecimals: false
@@ -67,6 +67,26 @@ jQuery(() ->
         }]
     },
   )
+  wdl_current_chart = new Highcharts.Chart(
+    {
+      chart:
+        renderTo: "wdl-current-chart"
+      title:
+        text: "Game statistics for best of current generation"
+      tooltip:
+        pointFormat: '{point.percentage:.1f}%'
+      series:
+        [{
+          name: "Game statistics"
+          type: "pie"
+          data: [
+            ["Wins", 100/3],
+            ["Draws", 100/3]
+            ["Losses", 100/3]
+          ]
+        }]
+    },
+  )
   if window.Worker
     worker = Work(require('./worker'))
     worker.onmessage = (e) ->
@@ -74,9 +94,17 @@ jQuery(() ->
       _genome.genes = e.data.genome.genes
       network = _genome.construct()
       numberOfGenerationsSimulated++
-      fitness_spline_chart.series[0].addPoint([numberOfGenerationsSimulated]
+      fitness_boxplot_chart.series[0].addPoint([numberOfGenerationsSimulated]
         .concat(e.data.statistics.fitnessValues), true,
         numberOfGenerationsSimulated > 10)
+      total = e.data.statistics.best.wins + e.data.statistics.best.draws +
+        e.data.statistics.best.losses
+      wdl_current_chart.series[0].data[0].update(
+        e.data.statistics.best.wins/total * 100)
+      wdl_current_chart.series[0].data[1].update(
+        e.data.statistics.best.draws/total * 100)
+      wdl_current_chart.series[0].data[2].update(
+        e.data.statistics.best.losses/total * 100)
       playerO.network = network
       playerO.setupSensors()
       if trainerEnabled

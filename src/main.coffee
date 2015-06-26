@@ -13,7 +13,7 @@ Trainer = require('./Trainer').Trainer
 JasmineEnabled = require('./JasmineShim').jasmineEnabled
 Work = require('webworkify')
 statistics = require('simple-statistics')
-if not window? or JasmineEnabled
+if not window? or not window.Worker? or JasmineEnabled
   return
 window.$ = window.jQuery = jQuery = require('jquery')
 require('bootstrap/dist/js/npm')
@@ -27,10 +27,10 @@ jQuery(() ->
   training_options =
   {
     fitInheritanceProbability: 1
-    numGenerations: 5
-    numToCreate: 100
-    gamesToPlay: 100
-    target: 100
+    numToCreate: 20
+    gamesToPlay: 20
+    target: 4000
+    randomPlayerDifficulty: -10
     weight:
       win: 10
       draw: 0
@@ -91,13 +91,16 @@ jQuery(() ->
         }]
     },
   )
-  if window.Worker
-    worker = Work(require('./worker'))
-    worker.onmessage = (e) ->
+  worker = undefined
+  messageHandler = (e) ->
+    if trainerEnabled and e.data.continue
+      worker.postMessage({genome: e.data.genome,
+      options: training_options})
+    else if not e.data.continue
       _genome = new Genome()
       _genome.genes = e.data.genome.genes
       network = _genome.construct()
-      numberOfGenerationsSimulated += training_options.numGenerations
+      numberOfGenerationsSimulated += e.data.delta
       fitness_boxplot_chart.series[0].addPoint([numberOfGenerationsSimulated]
         .concat(e.data.statistics.fitnessValues), true,
         fitness_boxplot_chart.series[0].data.length > 10)
@@ -111,9 +114,7 @@ jQuery(() ->
         e.data.statistics.best.losses/total * 100)
       playerO.network = network
       playerO.setupSensors()
-      if trainerEnabled
-        worker.postMessage({genome: e.data.genome,
-        options: training_options})
+    
   container = $("#mynetwork")[0]
   visualizer = new Visualizer(container, {
     physics:
@@ -140,14 +141,22 @@ jQuery(() ->
   )
   $("#trainer-button").click( ->
     if not trainerEnabled #play → pause
-      trainerEnabled = true
       _genome = new Genome()
       _genome.deconstruct(network)
-      worker.postMessage({genome: _genome, options: training_options})
+      worker = undefined
+      worker = Work(require('./worker'))
+      worker.onmessage = messageHandler
+      worker.postMessage({
+        genome: _genome
+        options: training_options
+        numberOfGenerationsSimulated: numberOfGenerationsSimulated
+      })
+      trainerEnabled = true
       console.log "Start"
       $("#trainer-button span").removeClass("glyphicon-play")
       $("#trainer-button span").addClass("glyphicon-pause")
     else
+      worker.terminate()
       trainerEnabled = false
       console.log "End"
       $("#trainer-button span").removeClass("glyphicon-pause")

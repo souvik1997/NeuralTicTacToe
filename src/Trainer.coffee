@@ -8,7 +8,7 @@ class Trainer
   constructor: (network, options) ->
     @network = network
     @options = options
-  train: (numgen=10) ->
+  train: () ->
     getMutationOptions = (k) =>
       opts = {}
       opts.fitInheritanceProbability = @options.fitInheritanceProbability
@@ -31,7 +31,7 @@ class Trainer
       opts.mutate.hiddenlayer_deletion.probability = @options
         .mutate.hiddenlayer_deletion.probability * k
       return opts
-    getStats = (organism) ->
+    getStats = (organism) =>
       o_network = organism.genome.construct()
       game = new TicTacToe()
       if Math.random() < 0.5
@@ -49,7 +49,7 @@ class Trainer
       randomTTTPlayer = new RandomTicTacToePlayer(game, random_player, 1)
       neuralPlayer = new NeuralTicTacToePlayer(game, network_player, o_network)
       neuralPlayer.setupSensors()
-      for x in [1..100]
+      for x in [1..@options.gamesToPlay]
         while game.state == TicTacToe.state.inProgress
           if random_player == currentPlayer
             randomTTTPlayer.move()
@@ -79,24 +79,24 @@ class Trainer
     return_statistics.wins = 0
     return_statistics.losses = 0
     return_statistics.draws = 0
-    for gen in [1..numgen]
+    for gen in [1..@options.numGenerations]
       parents = generation
         .sort((a,b) -> b.fitness - a.fitness)
       generation = []
       whattoadd = []
       whattoadd.push(parents[0])
       whattoadd.push(parents[1])
-      for x in [1..30]
+      for x in [1..@options.numToCreate]
         if parents[0].isOfSameSpeciesAs(parents[1])
           child =
             parents[0].mate(parents[1], getMutationOptions(
-              Math.sigmoid(-parents[0].fitness/2)))
+              Math.sigmoid(@options.target-parents[0].fitness)))
           whattoadd.push(child)
         else
           child1 = parents[0].mate(parents[0], getMutationOptions(
-            Math.sigmoid(-parents[0].fitness/2)))
+            Math.sigmoid(@options.target-parents[0].fitness)))
           child2 = parents[1].mate(parents[1], getMutationOptions(
-            Math.sigmoid(-parents[1].fitness/2)))
+            Math.sigmoid(@options.target-parents[1].fitness)))
           whattoadd.push(child1)
           whattoadd.push(child2)
       for child in whattoadd

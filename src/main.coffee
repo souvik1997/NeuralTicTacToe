@@ -24,25 +24,29 @@ jQuery(() ->
   trainer = new Trainer(network)
   trainerEnabled = false
   numberOfGenerationsSimulated = 0
-  mutation_options =
+  training_options =
   {
     fitInheritanceProbability: 1
+    numGenerations: 5
+    numToCreate: 100
+    gamesToPlay: 100
+    target: 100
     weight:
       win: 10
       draw: 0
       loss: -10
     mutate:
       weightchange:
-        probability: 0.8
-        scale: 5
+        probability: 0.9
+        scale: 10
       reroute:
-        probability: 0.5
+        probability: 0.8
       route_insertion:
-        probability: 0.7
+        probability: 0.8
       route_deletion:
-        probability: 0.03
+        probability: 0
       hiddenlayer_deletion:
-        probability: 0.05
+        probability: 0
   }
   fitness_boxplot_chart = new Highcharts.Chart(
     {
@@ -93,10 +97,10 @@ jQuery(() ->
       _genome = new Genome()
       _genome.genes = e.data.genome.genes
       network = _genome.construct()
-      numberOfGenerationsSimulated++
+      numberOfGenerationsSimulated += training_options.numGenerations
       fitness_boxplot_chart.series[0].addPoint([numberOfGenerationsSimulated]
         .concat(e.data.statistics.fitnessValues), true,
-        numberOfGenerationsSimulated > 10)
+        fitness_boxplot_chart.series[0].data.length > 10)
       total = e.data.statistics.best.wins + e.data.statistics.best.draws +
         e.data.statistics.best.losses
       wdl_current_chart.series[0].data[0].update(
@@ -109,7 +113,7 @@ jQuery(() ->
       playerO.setupSensors()
       if trainerEnabled
         worker.postMessage({genome: e.data.genome,
-        options: mutation_options})
+        options: training_options})
   container = $("#mynetwork")[0]
   visualizer = new Visualizer(container, {
     physics:
@@ -139,7 +143,7 @@ jQuery(() ->
       trainerEnabled = true
       _genome = new Genome()
       _genome.deconstruct(network)
-      worker.postMessage({genome: _genome, options: mutation_options})
+      worker.postMessage({genome: _genome, options: training_options})
       console.log "Start"
       $("#trainer-button span").removeClass("glyphicon-play")
       $("#trainer-button span").addClass("glyphicon-pause")

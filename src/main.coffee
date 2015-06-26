@@ -9,7 +9,6 @@ RandomTicTacToePlayer = require('./RandomTicTacToePlayer').RandomTicTacToePlayer
 NeuralTicTacToePlayer = require('./NeuralTicTacToePlayer').NeuralTicTacToePlayer
 Organism = require('./Organism').Organism
 Math = require('./MathPolyfill').Math
-Trainer = require('./Trainer').Trainer
 JasmineEnabled = require('./JasmineShim').jasmineEnabled
 Work = require('webworkify')
 statistics = require('simple-statistics')
@@ -21,7 +20,6 @@ require('highcharts-release/highcharts.src.js')
 require('highcharts-release/highcharts-more.src.js')
 jQuery(() ->
   network = new NeuralNetwork()
-  trainer = new Trainer(network)
   trainerEnabled = false
   numberOfGenerationsSimulated = 0
   training_options =

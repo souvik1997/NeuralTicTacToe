@@ -12,6 +12,7 @@ Math = require('./MathPolyfill').Math
 JasmineEnabled = require('./JasmineShim').jasmineEnabled
 Work = require('webworkify')
 statistics = require('simple-statistics')
+IdealTicTacToePlayer = require('./IdealTicTacToePlayer').IdealTicTacToePlayer
 if not window? or not window.Worker? or JasmineEnabled
   return
 window.$ = window.jQuery = jQuery = require('jquery')
@@ -104,8 +105,8 @@ jQuery(() ->
       e.data.statistics.best.draws/total * 100)
     wdl_current_chart.series[0].data[2].update(
       e.data.statistics.best.losses/total * 100)
-    playerO.network = network
-    playerO.setupSensors()
+    opponent.network = network
+    #opponent.setupSensors()
     
   container = $("#mynetwork")[0]
   visualizer = new Visualizer(container, {
@@ -154,8 +155,9 @@ jQuery(() ->
   )
   game = new TicTacToe()
   currentPlayer = TicTacToe.player.X
-  playerO = new NeuralTicTacToePlayer(game, TicTacToe.player.O, network)
-  playerO.setupSensors()
+  #opponent = new NeuralTicTacToePlayer(game, TicTacToe.player.O, network)
+  #opponent.setupSensors()
+  opponent = new IdealTicTacToePlayer(game, TicTacToe.player.O)
   # Set up events for tic tac toe buttons
   updateGrid = (r, c) ->
     $("#i#{r}#{c}").html(
@@ -178,11 +180,17 @@ jQuery(() ->
 
   $("#restart-btn").click(() ->
     game.newGame()
-    currentPlayer = TicTacToe.player.X
     for r in [0..2]
       for c in [0..2]
         $("#i#{r}#{c}").html("&nbsp;")
     $(".tic-tac-toe-end").hide()
+    if currentPlayer == TicTacToe.player.O
+      move = opponent.move()
+      updateGrid(move.r, move.c)
+      currentPlayer =
+        (if currentPlayer == TicTacToe.player.X
+        then TicTacToe.player.O
+        else TicTacToe.player.X)
   )
   for r in [0..2]
     for c in [0..2]
@@ -192,18 +200,18 @@ jQuery(() ->
             result = game.move(r, c, currentPlayer)
             updateGrid(r, c)
             result = showState()
+            currentPlayer =
+              (if currentPlayer == TicTacToe.player.X
+              then TicTacToe.player.O
+              else TicTacToe.player.X)
             if result == TicTacToe.state.inProgress
-              currentPlayer =
-                (if currentPlayer == TicTacToe.player.X
-                then TicTacToe.player.O
-                else TicTacToe.player.X)
-              move = playerO.move()
+              move = opponent.move()
               updateGrid(move.r, move.c)
-              showState()
               currentPlayer =
                 (if currentPlayer == TicTacToe.player.X
                 then TicTacToe.player.O
                 else TicTacToe.player.X)
+              showState()
         )
   sensory_neurons = []
   output_neurons = []

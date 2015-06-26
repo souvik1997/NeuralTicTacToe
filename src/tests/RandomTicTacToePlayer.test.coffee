@@ -31,6 +31,7 @@ describe 'RandomTicTacToePlayer', ->
     expect(game.state).toEqual(TicTacToe.state.xWin)
   it 'can block a winning move', ->
     game = new TicTacToe()
+    game.currentPlayer = TicTacToe.player.O
     player = new RandomTicTacToePlayer(game, TicTacToe.player.O, 1)
     game.board = [[_,x,_],
                   [o,x,x],

@@ -1,9 +1,13 @@
+extend = require('node.extend')
 class TicTacToe
   constructor: () ->
     @dimensions = {r: 3, c: 3}
     @newGame()
+    @currentPlayer = TicTacToe.player.X
 
   move: (r, c, player) ->
+    if player != @currentPlayer
+      return @state
     if @isAValidPosition(r, c) and @board[r][c] == TicTacToe.player.empty
       @board[r][c] = player
       value = @_checkWin(r, c)
@@ -11,6 +15,10 @@ class TicTacToe
         @state = value
       else if @_checkDraw()
         @state = TicTacToe.state.draw
+      @currentPlayer =
+        (if @currentPlayer == TicTacToe.player.X
+        then TicTacToe.player.O
+        else TicTacToe.player.X)
     return @state
 
   isAValidPosition: (r, c) ->
@@ -21,7 +29,7 @@ class TicTacToe
       return TicTacToe.player.null
     return @board[r][c]
 
-  newGame: () ->
+  newGame: (resetCurrentPlayer = false) ->
     @state = TicTacToe.state.inProgress
     @board = []
     for r in [1..@dimensions.r]
@@ -29,6 +37,8 @@ class TicTacToe
       for c in [1..@dimensions.c]
         row.push(TicTacToe.player.empty)
       @board.push(row)
+    if resetCurrentPlayer
+      @currentPlayer = TicTacToe.player.X
 
   _checkDraw: () ->
     if @state == TicTacToe.state.xWin or @state == TicTacToe.state.yWin
@@ -115,6 +125,16 @@ class TicTacToe
     checkForwardDiagonal(r, c)]
     .filter((x) => x == @getPlayerAt(r,c))[0]
     return status ? TicTacToe.player.empty
+  clone: () ->
+    g = new TicTacToe()
+    for r in [0..@dimensions.r-1]
+      for c in [0..@dimensions.c-1]
+        g.board[r][c] = @board[r][c]
+    g.state = @state
+    g.dimensions.r = @dimensions.r
+    g.dimensions.c = @dimensions.c
+    g.currentPlayer = @currentPlayer
+    return g
 TicTacToe.player = {
   X: 1
   O: 2

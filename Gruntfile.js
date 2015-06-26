@@ -50,6 +50,9 @@ module.exports = function(grunt) {
       app: {
         files: {
           'dist/js/module.js': ['tmp/js/**/*.js'],
+        },
+        options: {
+          transform: [['babelify', { compact: false }]]
         }
       }
     },

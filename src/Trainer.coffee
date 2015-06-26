@@ -1,5 +1,4 @@
 RandomTicTacToePlayer = require('./RandomTicTacToePlayer').RandomTicTacToePlayer
-IdealTicTacToePlayer = require('./IdealTicTacToePlayer').IdealTicTacToePlayer
 NeuralTicTacToePlayer = require('./NeuralTicTacToePlayer').NeuralTicTacToePlayer
 TicTacToe = require('./TicTacToe').TicTacToe
 Organism = require('./Organism').Organism
@@ -45,7 +44,7 @@ Trainer.trainNEAT = (network, options, numberOfGenerationsSimulated
       draws: 0
     }
     currentPlayer = TicTacToe.player.X
-    randomTTTPlayer = new IdealTicTacToePlayer(game, random_player,
+    randomTTTPlayer = new RandomTicTacToePlayer(game, random_player,
       Math.sigmoid((numberOfGenerationsSimulated/
       Math.abs(options.randomPlayerDifficulty)) +
       options.randomPlayerDifficulty))

@@ -64,3 +64,6 @@ table {
 	font-family: monospace;
 	list-style-type: none;
 }
+select {
+	color: black;
+}

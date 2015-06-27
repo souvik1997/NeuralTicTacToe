@@ -58,9 +58,9 @@ options =
       route_insertion:
         probability: 0.8
       route_deletion:
-        probability: 0
+        probability: 0.001
       hiddenlayer_deletion:
-        probability: 0
+        probability: 0.001
 }
 setupNetwork = () ->
   network = new NeuralNetwork()
@@ -126,6 +126,7 @@ createGameBoard = () ->
     if game.currentPlayer == TicTacToe.player.O
       move = opponent.move()
       updateGrid(move.r, move.c, TicTacToe.player.O)
+      showState()
   )
   $("#game-board").empty()
   board = $("#game-board").detach()
@@ -158,6 +159,7 @@ createGameBoard = () ->
   for r in [0..options.game.dimensions.rows-1]
     for c in [0..options.game.dimensions.columns-1]
       $("#i#{r}#{c}").css("font-size", ""+($("#i#{r}#{c}").width() * 0.9))
+visualizer = undefined
 setupVisualizer = () ->
   container = $("#mynetwork")[0]
   visualizer = new Visualizer(container, {
@@ -166,19 +168,24 @@ setupVisualizer = () ->
     height: "60%"
   })
 
-initialize = () ->
+
+resetStats = () ->
   if worker?
     worker.terminate()
     $("#trainer-button span").removeClass("glyphicon-pause")
     $("#trainer-button span").addClass("glyphicon-play")
+    for series in fitness_boxplot_chart.series
+      series.setData([])
+    numberOfGenerationsSimulated = 0
+    trainerEnabled = false
+initialize = () ->
+  resetStats()
   createGameBoard()
   if prevdimensions.rows != options.game.dimensions.rows or
   prevdimensions.columns != options.game.dimensions.columns
     setupNetwork()
   prevdimensions.rows = options.game.dimensions.rows
   prevdimensions.columns = options.game.dimensions.columns
-  for series in fitness_boxplot_chart.series
-    series.setData([])
   opponents[0] = new RandomTicTacToePlayer(game, TicTacToe.player.O)
   opponents[1] = new IdealTicTacToePlayer(game, TicTacToe.player.O)
   opponents[2] = new NeuralTicTacToePlayer(game, TicTacToe.player.O, network)
@@ -188,7 +195,7 @@ initialize = () ->
     opponent = opponents[1]
   if options.game.opponent == "neural"
     opponent = opponents[2]
-  numberOfGenerationsSimulated = 0
+  
 
 jQuery(() ->
   fitness_boxplot_chart = new Highcharts.Chart(
@@ -294,32 +301,44 @@ jQuery(() ->
     .onFinishChange((value) -> initialize())
   training = gui.addFolder('training')
   training.add(options.training, 'fitInheritanceProbability', 0, 1)
+    .onFinishChange((value) -> resetStats())
   training.add(options.training, 'numToCreate').min(0).max(100).step(1)
+    .onFinishChange((value) -> resetStats())
   training.add(options.training, 'gamesToPlay').min(0).max(100).step(1)
+    .onFinishChange((value) -> resetStats())
   training.add(options.training, 'target').min(0).max(4000)
+    .onFinishChange((value) -> resetStats())
   training.add(options.training, 'randomPlayerDifficulty').min(-100).max(100)
+    .onFinishChange((value) -> resetStats())
   weight = training.addFolder('weight')
   weight.add(options.training.weight, 'win', -30, 30)
+    .onFinishChange((value) -> resetStats())
   weight.add(options.training.weight, 'draw', -30, 30)
+    .onFinishChange((value) -> resetStats())
   weight.add(options.training.weight, 'loss', -30, 30)
+    .onFinishChange((value) -> resetStats())
   mutate = training.addFolder('mutate')
   weightchange = mutate.addFolder('weightchange')
   weightchange.add(options.training.mutate.weightchange, 'probability', 0, 1)
+    .onFinishChange((value) -> resetStats())
   weightchange.add(options.training.mutate.weightchange, 'scale', 0, 100)
+    .onFinishChange((value) -> resetStats())
   reroute = mutate.addFolder('reroute')
   reroute.add(options.training.mutate.reroute, 'probability',
-    0, 1)
+    0, 1).onFinishChange((value) -> resetStats())
   route_insertion = mutate.addFolder('route_insertion')
   route_insertion.add(options.training.mutate.route_insertion, 'probability',
-    0, 1)
+    0, 1).onFinishChange((value) -> resetStats())
   route_deletion = mutate.addFolder('route_deletion')
   route_deletion.add(options.training.mutate.route_deletion,
-    'probability', 0, 1)
+    'probability', 0, 1).onFinishChange((value) -> resetStats())
   hiddenlayer_deletion = mutate.addFolder('hiddenlayer_deletion')
   hiddenlayer_deletion.add(options.training.mutate.hiddenlayer_deletion,
-    'probability', 0, 1)
-  $(gui.domElement).css("position","absolute").prependTo("#main")
+    'probability', 0, 1).onFinishChange((value) -> resetStats())
+  $(gui.domElement).css("position","absolute").css("z-index","10")
+    .prependTo("#main")
 
   
   initialize()
+  setupVisualizer()
 )

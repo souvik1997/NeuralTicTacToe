@@ -188,6 +188,7 @@ initialize = () ->
     opponent = opponents[1]
   if options.game.opponent == "neural"
     opponent = opponents[2]
+  numberOfGenerationsSimulated = 0
 
 jQuery(() ->
   fitness_boxplot_chart = new Highcharts.Chart(

@@ -62,27 +62,27 @@ options =
       hiddenlayer_deletion:
         probability: 0.001
 }
-worker = undefined
+neatworker = undefined
 messageHandler = (e) ->
-  if e.update == "neat"
+  if e.data.update == "neat"
     network = NeuralNetwork.fromArray(e.data.neat.network)
-    numberOfGenerationsSimulated += e.data.delta.neat
+    numberOfGenerationsSimulated += e.data.neat.delta
     fitness_boxplot_chart.series[0].addPoint([numberOfGenerationsSimulated]
-      .concat(e.data.statistics.neat.fitnessValues), true,
+      .concat(e.data.neat.statistics.fitnessValues), true,
       fitness_boxplot_chart.series[0].data.length > 10)
-    total = e.data.statistics.neat.best.wins +
-      e.data.statistics.neat.best.draws +
-      e.data.statistics.best.losses
+    total = e.data.neat.statistics.best.wins +
+      e.data.neat.statistics.best.draws +
+      e.data.neat.statistics.best.losses
     wdl_current_chart.series[0].data[0].update(
-      e.data.statistics.neat.best.wins/total * 100)
+      e.data.neat.statistics.best.wins/total * 100)
     wdl_current_chart.series[0].data[1].update(
-      e.data.statistics.neat.best.draws/total * 100)
+      e.data.neat.statistics.best.draws/total * 100)
     wdl_current_chart.series[0].data[2].update(
-      e.data.statistics.neat.best.losses/total * 100)
+      e.data.neat.statistics.best.losses/total * 100)
     opponents[2].network = network
     if opponents[2].setupSensors?
       opponents[2].setupSensors()
-  if e.update == "backprop"
+  if e.data.update == "backprop"
     network = NeuralNetwork.fromArray(e.data.backprop.network)
     opponents[3].network = network
     if opponents[3].setupSensors?
@@ -162,8 +162,8 @@ setupVisualizer = () ->
 
 
 resetStats = () ->
-  if worker?
-    worker.terminate()
+  if neatworker?
+    neatworker.terminate()
     $("#trainer-button span").removeClass("glyphicon-pause")
     $("#trainer-button span").addClass("glyphicon-play")
     for series in fitness_boxplot_chart.series
@@ -275,13 +275,12 @@ jQuery(() ->
   $("#trainer-button").off('click.main')
   $("#trainer-button").on('click.main', ->
     if not trainerEnabled #play → pause
-      worker = undefined
-      worker = Work(require('./worker'))
-      worker.onmessage = messageHandler
-      worker.postMessage({
-        network:
-          neat: opponents[2].network
-          backprop: opponents[3].network
+      neatworker = undefined
+      neatworker = Work(require('./neatworker'))
+      neatworker.onmessage = messageHandler
+      neatworker.postMessage({
+        neat:
+          network: opponents[2].network
         options: options
         numberOfGenerationsSimulated: numberOfGenerationsSimulated
       })
@@ -290,7 +289,7 @@ jQuery(() ->
       $("#trainer-button span").removeClass("glyphicon-play")
       $("#trainer-button span").addClass("glyphicon-pause")
     else
-      worker.terminate()
+      neatworker.terminate()
       trainerEnabled = false
       console.log "End"
       $("#trainer-button span").removeClass("glyphicon-pause")

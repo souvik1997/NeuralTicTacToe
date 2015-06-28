@@ -29,7 +29,7 @@ opponent = undefined
 prevdimensions = {}
 trainerEnabled = false
 numberOfGenerationsSimulated = 0
-wdl_current_chart = undefined
+wdl_neat_current_chart = undefined
 fitness_boxplot_chart = undefined
 options =
 {
@@ -75,11 +75,11 @@ messageHandler = (e) ->
     total = e.data.neat.statistics.best.wins +
       e.data.neat.statistics.best.draws +
       e.data.neat.statistics.best.losses
-    wdl_current_chart.series[0].data[0].update(
+    wdl_neat_current_chart.series[0].data[0].update(
       e.data.neat.statistics.best.wins/total * 100)
-    wdl_current_chart.series[0].data[1].update(
+    wdl_neat_current_chart.series[0].data[1].update(
       e.data.neat.statistics.best.draws/total * 100)
-    wdl_current_chart.series[0].data[2].update(
+    wdl_neat_current_chart.series[0].data[2].update(
       e.data.neat.statistics.best.losses/total * 100)
     opponents[2].network = network
     if opponents[2].setupSensors?
@@ -235,10 +235,10 @@ jQuery(() ->
         }]
     },
   )
-  wdl_current_chart = new Highcharts.Chart(
+  wdl_neat_current_chart = new Highcharts.Chart(
     {
       chart:
-        renderTo: "wdl-current-chart"
+        renderTo: "wdl-neat-current-chart"
       title:
         text: "Game statistics for best of current generation"
       tooltip:

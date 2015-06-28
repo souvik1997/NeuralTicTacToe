@@ -89,6 +89,8 @@ class NeuralNetwork
 
 NeuralNetwork.fromArray = (arr) ->
   network = new NeuralNetwork()
+  if not arr?
+    return network
   helper = (x) ->
     if x.type == NeuronType.generic
       neuron = new Neuron()

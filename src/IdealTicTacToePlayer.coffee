@@ -1,8 +1,9 @@
 TicTacToe = require('./TicTacToe').TicTacToe
 class IdealTicTacToePlayer
-  constructor: (game, player) ->
+  constructor: (game, player, depth=5) ->
     @game = game
     @myplayer = player
+    @depth = depth
 
   move: () ->
     choice = {}
@@ -11,7 +12,7 @@ class IdealTicTacToePlayer
     else
       other_player = TicTacToe.player.X
     bestMove = {score: -Infinity}
-    alphabeta = (game, alpha=-Infinity, beta=Infinity) =>
+    alphabeta = (game, alpha=-Infinity, beta=Infinity, depth=0) =>
       score = (game) =>
         if game.state == @myplayer
           return 10
@@ -20,7 +21,7 @@ class IdealTicTacToePlayer
         else
           return 0
       ret = 0
-      if game.state != TicTacToe.state.inProgress
+      if game.state != TicTacToe.state.inProgress or depth >= @depth
         return score(game)
       for r in [0..@game.dimensions.r-1]
         for c in [0..@game.dimensions.c-1]
@@ -28,7 +29,7 @@ class IdealTicTacToePlayer
             if game.getPlayerAt(r,c) == TicTacToe.player.empty
               clone_game = game.clone()
               clone_game.move(r, c, clone_game.currentPlayer)
-              child = alphabeta(clone_game, alpha, beta)
+              child = alphabeta(clone_game, alpha, beta, depth + 1)
               if game.currentPlayer == @myplayer
                 ret = alpha = Math.max(alpha, child)
               else

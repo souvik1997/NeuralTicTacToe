@@ -63,6 +63,7 @@ options =
         probability: 0.001
 }
 neatworker = undefined
+backpropworker = undefined
 messageHandler = (e) ->
   if e.data.update == "neat"
     network = NeuralNetwork.fromArray(e.data.neat.network)
@@ -164,12 +165,14 @@ setupVisualizer = () ->
 resetStats = () ->
   if neatworker?
     neatworker.terminate()
-    $("#trainer-button span").removeClass("glyphicon-pause")
-    $("#trainer-button span").addClass("glyphicon-play")
-    for series in fitness_boxplot_chart.series
-      series.setData([])
-    numberOfGenerationsSimulated = 0
-    trainerEnabled = false
+  if backpropworker?
+    backpropworker.terminate()
+  $("#trainer-button span").removeClass("glyphicon-pause")
+  $("#trainer-button span").addClass("glyphicon-play")
+  for series in fitness_boxplot_chart.series
+    series.setData([])
+  numberOfGenerationsSimulated = 0
+  trainerEnabled = false
 initialize = () ->
   resetStats()
   createGameBoard()
@@ -284,12 +287,22 @@ jQuery(() ->
         options: options
         numberOfGenerationsSimulated: numberOfGenerationsSimulated
       })
+      backpropworker = undefined
+      backpropworker = Work(require('./backpropworker'))
+      backpropworker.onmessage = messageHandler
+      backpropworker.postMessage({
+        backprop:
+          network: opponents[3].network
+        options: options
+        numberOfGenerationsSimulated: numberOfGenerationsSimulated
+      })
       trainerEnabled = true
       console.log "Start"
       $("#trainer-button span").removeClass("glyphicon-play")
       $("#trainer-button span").addClass("glyphicon-pause")
     else
       neatworker.terminate()
+      backpropworker.terminate()
       trainerEnabled = false
       console.log "End"
       $("#trainer-button span").removeClass("glyphicon-pause")

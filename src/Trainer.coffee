@@ -139,6 +139,7 @@ Trainer.trainBackprop = (network, options, numberOfGenerationsSimulated
       d.weight -= delta * d.neuron.getOutput()
     for d in neuron.dendrites
       backpropHelper(d.neuron, d.weight * delta, learningrate)
+  console.log "hi"
   while true
     return_statistics = {}
     trainingCounts = []

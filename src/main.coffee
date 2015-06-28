@@ -207,8 +207,27 @@ initialize = () ->
     for o in output_neurons
       network.link(s, o)
   opponents[2].network = network
-  opponents[3].network = network
   opponents[2].setupSensors()
+
+  network = new NeuralNetwork()
+  sensory_neurons = []
+  output_neurons = []
+  for r in [0..options.game.dimensions.rows-1]
+    for c in [0..options.game.dimensions.columns-1]
+      network.add new SensoryNeuron(
+        text: "("+r+","+c+")",
+        id:10+r+c/10)
+      network.add new OutputNeuron(
+        text: "("+r+","+c+")",
+        id:20+r+c/10)
+
+  for n in [0..60]
+    for r in [0..options.game.dimensions.rows-1]
+      for c in [0..options.game.dimensions.columns-1]
+        hidden_neuron = new Neuron()
+        network.link(hidden_neuron, network.findInNetworkByID(20+r+c/10))
+        network.link(network.findInNetworkByID(10+r+c/10), hidden_neuron)
+  opponents[3].network = network
   opponents[3].setupSensors()
   prevdimensions.rows = options.game.dimensions.rows
   prevdimensions.columns = options.game.dimensions.columns
@@ -290,7 +309,10 @@ jQuery(() ->
   $("#modal-toggle").on('click.main', ->
     $("#mymodal").modal({show: true, backdrop: 'static', keyboard: false})
     if visualizer
-      visualizer.draw(opponents[2].network)
+      if options.game.opponent == "neural (NEAT)"
+        visualizer.draw(opponents[2].network)
+      if options.game.opponent == "neural (backprop)"
+        visualizer.draw(opponents[3].network)
   )
   $("#modal-close").off('click.main')
   $("#modal-close").on('click.main', ->

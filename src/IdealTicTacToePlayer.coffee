@@ -2,19 +2,19 @@ TicTacToe = require('./TicTacToe').TicTacToe
 class IdealTicTacToePlayer
   constructor: (game, player, depth=5) ->
     @game = game
-    @myplayer = player
+    @player = player
     @depth = depth
 
   move: () ->
     choice = {}
-    if @myplayer == TicTacToe.player.X
+    if @player == TicTacToe.player.X
       other_player = TicTacToe.player.O
     else
       other_player = TicTacToe.player.X
     bestMove = {score: -Infinity}
     alphabeta = (game, alpha=-Infinity, beta=Infinity, depth=0) =>
       score = (game) =>
-        if game.state == @myplayer
+        if game.state == @player
           return 10
         else if game.state == other_player
           return -10
@@ -30,7 +30,7 @@ class IdealTicTacToePlayer
               clone_game = game.clone()
               clone_game.move(r, c, clone_game.currentPlayer)
               child = alphabeta(clone_game, alpha, beta, depth + 1)
-              if game.currentPlayer == @myplayer
+              if game.currentPlayer == @player
                 ret = alpha = Math.max(alpha, child)
               else
                 ret = beta = Math.min(beta, child)
@@ -42,14 +42,14 @@ class IdealTicTacToePlayer
         do (r,c) =>
           if @game.getPlayerAt(r,c) == TicTacToe.player.empty
             cloned_game = @game.clone()
-            cloned_game.move(r, c, @myplayer)
+            cloned_game.move(r, c, @player)
             score = alphabeta(cloned_game)
             if score > bestMove.score or
             (score == bestMove.score and Math.random() < 0.5)
               bestMove.r = r
               bestMove.c = c
               bestMove.score = score
-    @game.move(bestMove.r, bestMove.c, @myplayer)
+    @game.move(bestMove.r, bestMove.c, @player)
     return bestMove
 
 

@@ -36,14 +36,15 @@ options =
   game:
     opponent: "ideal"
     dimensions:
-      rows: 2
-      columns: 2
-      k: 2
+      rows: 3
+      columns: 3
+      k: 3
   training:
     fitInheritanceProbability: 1
     numToCreate: 20
     gamesToPlay: 20
     target: 4000
+    learningrate: 1
     randomPlayerDifficulty: -10
     weight:
       win: 10
@@ -178,27 +179,26 @@ initialize = () ->
   createGameBoard()
   opponents[0] = new RandomTicTacToePlayer(game, TicTacToe.player.O)
   opponents[1] = new IdealTicTacToePlayer(game, TicTacToe.player.O)
-  opponents[2] = new NeuralTicTacToePlayer(game, TicTacToe.player.O, network)
-  opponents[3] = new NeuralTicTacToePlayer(game, TicTacToe.player.O, network)
-  if prevdimensions.rows != options.game.dimensions.rows or
-  prevdimensions.columns != options.game.dimensions.columns or
-  prevdimensions.k != options.game.dimensions.k
-    network = new NeuralNetwork()
-    sensory_neurons = []
-    output_neurons = []
-    for r in [0..options.game.dimensions.rows-1]
-      for c in [0..options.game.dimensions.columns-1]
-        sensory_neurons.push new SensoryNeuron(
-          text: "("+r+","+c+")",
-          id:10+r+c/10)
-        output_neurons.push new OutputNeuron(
-          text: "("+r+","+c+")",
-          id:20+r+c/10)
-    for s in sensory_neurons
-      for o in output_neurons
-        network.link(s, o)
-    opponents[2].network = network
-    opponents[3].network = network
+  opponents[2] = new NeuralTicTacToePlayer(game, TicTacToe.player.O, undefined)
+  opponents[3] = new NeuralTicTacToePlayer(game, TicTacToe.player.O, undefined)
+  network = new NeuralNetwork()
+  sensory_neurons = []
+  output_neurons = []
+  for r in [0..options.game.dimensions.rows-1]
+    for c in [0..options.game.dimensions.columns-1]
+      sensory_neurons.push new SensoryNeuron(
+        text: "("+r+","+c+")",
+        id:10+r+c/10)
+      output_neurons.push new OutputNeuron(
+        text: "("+r+","+c+")",
+        id:20+r+c/10)
+  for s in sensory_neurons
+    for o in output_neurons
+      network.link(s, o)
+  opponents[2].network = network
+  opponents[3].network = network
+  opponents[2].setupSensors()
+  opponents[3].setupSensors()
   prevdimensions.rows = options.game.dimensions.rows
   prevdimensions.columns = options.game.dimensions.columns
   prevdimensions.k = options.game.dimensions.k
@@ -336,6 +336,8 @@ jQuery(() ->
   training.add(options.training, 'gamesToPlay').min(0).max(100).step(1)
     .onFinishChange((value) -> resetStats())
   training.add(options.training, 'target').min(0).max(4000)
+    .onFinishChange((value) -> resetStats())
+  training.add(options.training, 'learningrate').min(0).max(3)
     .onFinishChange((value) -> resetStats())
   training.add(options.training, 'randomPlayerDifficulty').min(-100).max(100)
     .onFinishChange((value) -> resetStats())

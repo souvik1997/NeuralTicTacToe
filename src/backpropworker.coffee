@@ -14,7 +14,7 @@ module.exports = (self) ->
     Trainer.trainBackprop(network, data.options,
       data.numberOfGenerationsSimulated,
       (stats) ->
-        postMessage({
+        postMessage(JSON.stringify {
           update: 'backprop'
           backprop:
             statistics: stats

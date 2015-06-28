@@ -14,7 +14,7 @@ module.exports = (self) ->
     Trainer.trainNEAT(network, data.options,
       data.numberOfGenerationsSimulated,
       (stats) ->
-        postMessage({
+        postMessage(JSON.stringify {
           update: 'neat'
           neat:
             statistics: stats

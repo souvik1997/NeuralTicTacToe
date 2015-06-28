@@ -174,6 +174,7 @@ Trainer.trainBackprop = (network, options, numberOfGenerationsSimulated
     return_statistics.wins = 0
     return_statistics.draws = 0
     return_statistics.losses = 0
+    return_statistics.network = neuralPlayer.network
     for x in [1..options.training.gamesToPlay]
       while testgame.state == TicTacToe.state.inProgress
         if testgame.currentPlayer == testrandomPlayer.player

@@ -30,6 +30,7 @@ prevdimensions = {}
 trainerEnabled = false
 numberOfGenerationsSimulated = 0
 wdl_neat_current_chart = undefined
+wdl_backprop_current_chart = undefined
 fitness_boxplot_chart = undefined
 options =
 {
@@ -66,26 +67,36 @@ options =
 neatworker = undefined
 backpropworker = undefined
 messageHandler = (e) ->
-  if e.data.update == "neat"
-    network = NeuralNetwork.fromArray(e.data.neat.network)
-    numberOfGenerationsSimulated += e.data.neat.delta
+  data = JSON.parse e.data
+  if data.update == "neat"
+    network = NeuralNetwork.fromArray(data.neat.network)
+    numberOfGenerationsSimulated += data.neat.delta
     fitness_boxplot_chart.series[0].addPoint([numberOfGenerationsSimulated]
-      .concat(e.data.neat.statistics.fitnessValues), true,
+      .concat(data.neat.statistics.fitnessValues), true,
       fitness_boxplot_chart.series[0].data.length > 10)
-    total = e.data.neat.statistics.best.wins +
-      e.data.neat.statistics.best.draws +
-      e.data.neat.statistics.best.losses
+    total = data.neat.statistics.best.wins +
+      data.neat.statistics.best.draws +
+      data.neat.statistics.best.losses
     wdl_neat_current_chart.series[0].data[0].update(
-      e.data.neat.statistics.best.wins/total * 100)
+      data.neat.statistics.best.wins/total * 100)
     wdl_neat_current_chart.series[0].data[1].update(
-      e.data.neat.statistics.best.draws/total * 100)
+      data.neat.statistics.best.draws/total * 100)
     wdl_neat_current_chart.series[0].data[2].update(
-      e.data.neat.statistics.best.losses/total * 100)
+      data.neat.statistics.best.losses/total * 100)
     opponents[2].network = network
     if opponents[2].setupSensors?
       opponents[2].setupSensors()
-  if e.data.update == "backprop"
-    network = NeuralNetwork.fromArray(e.data.backprop.network)
+  if data.update == "backprop"
+    network = NeuralNetwork.fromArray(data.backprop.network)
+    total = data.backprop.statistics.wins +
+      data.backprop.statistics.draws +
+      data.backprop.statistics.losses
+    wdl_backprop_current_chart.series[0].data[0].update(
+      data.backprop.statistics.wins/total * 100)
+    wdl_backprop_current_chart.series[0].data[1].update(
+      data.backprop.statistics.draws/total * 100)
+    wdl_backprop_current_chart.series[0].data[2].update(
+      data.backprop.statistics.losses/total * 100)
     opponents[3].network = network
     if opponents[3].setupSensors?
       opponents[3].setupSensors()
@@ -241,6 +252,26 @@ jQuery(() ->
         renderTo: "wdl-neat-current-chart"
       title:
         text: "Game statistics for best of current generation"
+      tooltip:
+        pointFormat: '{point.percentage:.1f}%'
+      series:
+        [{
+          name: "Game statistics"
+          type: "pie"
+          data: [
+            ["Wins", 100/3],
+            ["Draws", 100/3]
+            ["Losses", 100/3]
+          ]
+        }]
+    },
+  )
+  wdl_backprop_current_chart = new Highcharts.Chart(
+    {
+      chart:
+        renderTo: "wdl-backprop-current-chart"
+      title:
+        text: "Game statistics"
       tooltip:
         pointFormat: '{point.percentage:.1f}%'
       series:

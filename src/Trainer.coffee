@@ -132,14 +132,16 @@ Trainer.trainBackprop = (network, options, numberOfGenerationsSimulated
   idealPlayer = new IdealTicTacToePlayer(game, TicTacToe.player.O)
   neuralPlayer = new NeuralTicTacToePlayer(game, TicTacToe.player.O, network)
   neuralPlayer.setupSensors()
-  backpropHelper = (neuron, expected) ->
+  backpropHelper = (neuron, expected, learningrate) ->
     output = neuron.getOutput()
     delta = output * (1-output) * (output-expected)
     for d in neuron.dendrites
       d.weight -= delta * d.neuron.getOutput()
     for d in neuron.dendrites
-      backpropHelper(d.neuron, d.weight * delta)
+      backpropHelper(d.neuron, d.weight * delta, learningrate)
   while true
+    return_statistics = {}
+    trainingCounts = []
     while game.state == TicTacToe.state.inProgress
       game_clone = game.clone()
       if game.currentPlayer == randomPlayer.player
@@ -151,22 +153,42 @@ Trainer.trainBackprop = (network, options, numberOfGenerationsSimulated
                           [0,0,0]]
         expectedOutput[idealMove.r][idealMove.c] = 1
         madeTheRightMove = false
+        trainingCounts.push(0)
         while not madeTheRightMove
+          trainingCounts[trainingCounts.length-1]++
           for r in [0..game.dimensions.r-1]
             for c in [0..game.dimensions.c-1]
               backpropHelper(neuralPlayer.getOutputNeuron(r,c),
-                expectedOutput[r][c])
+                expectedOutput[r][c], options.training.learningrate)
           neuralPlayer.game = game_clone.clone()
           move = neuralPlayer.move()
           if move.r == idealMove.r and move.c == idealMove.c
             madeTheRightMove = true
     game.newGame()
-
-
-
-
-
-
+    testgame = new TicTacToe()
+    testrandomPlayer = new RandomTicTacToePlayer(testgame, TicTacToe.player.X,
+      options.training.randomPlayerDifficulty)
+    testneuralPlayer = new NeuralTicTacToePlayer(testgame,
+      TicTacToe.player.O, neuralPlayer.network)
+    testneuralPlayer.setupSensors()
+    return_statistics.wins = 0
+    return_statistics.draws = 0
+    return_statistics.losses = 0
+    for x in [1..options.training.gamesToPlay]
+      while testgame.state == TicTacToe.state.inProgress
+        if testgame.currentPlayer == testrandomPlayer.player
+          testrandomPlayer.move()
+        else
+          testneuralPlayer.move()
+        if testgame.state == testrandomPlayer.player
+          return_statistics.losses++
+        else if testgame.state == testneuralPlayer.player
+          return_statistics.wins++
+        else if testgame.state == TicTacToe.state.draw
+          return_statistics.draws++
+      testgame.newGame()
+    return_statistics.trainingCounts = trainingCounts
+    updateFunction(return_statistics)
 
 root = module.exports ? this
 root.Trainer = Trainer

@@ -281,7 +281,7 @@ jQuery(() ->
       neatworker = undefined
       neatworker = Work(require('./neatworker'))
       neatworker.onmessage = messageHandler
-      neatworker.postMessage({
+      neatworker.postMessage(JSON.stringify {
         neat:
           network: opponents[2].network
         options: options
@@ -290,7 +290,7 @@ jQuery(() ->
       backpropworker = undefined
       backpropworker = Work(require('./backpropworker'))
       backpropworker.onmessage = messageHandler
-      backpropworker.postMessage({
+      backpropworker.postMessage(JSON.stringify {
         backprop:
           network: opponents[3].network
         options: options

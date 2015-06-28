@@ -8,16 +8,17 @@ Trainer = require('./Trainer').Trainer
 NeuralNetwork = require('./NeuralNetwork').NeuralNetwork
 module.exports = (self) ->
   self.addEventListener 'message', (e) ->
-    network = NeuralNetwork.fromArray(e.data.neat.network)
+    data = JSON.parse e.data
+    network = NeuralNetwork.fromArray(data.neat.network)
     console.log("hi")
-    Trainer.trainNEAT(network, e.data.options,
-      e.data.numberOfGenerationsSimulated,
+    Trainer.trainNEAT(network, data.options,
+      data.numberOfGenerationsSimulated,
       (stats) ->
         postMessage({
           update: 'neat'
           neat:
             statistics: stats
-            options: e.data.options
+            options: data.options
             network: stats.network
             delta: 1
         })

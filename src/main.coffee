@@ -39,6 +39,7 @@ options =
     dimensions:
       rows: 2
       columns: 2
+      k: 2
   training:
     fitInheritanceProbability: 1
     numToCreate: 20
@@ -97,7 +98,7 @@ messageHandler = (e) ->
     opponent.setupSensors()
 createGameBoard = () ->
   game = new TicTacToe(options.game.dimensions.rows,
-    options.game.dimensions.columns)
+    options.game.dimensions.columns, options.game.dimensions.k)
   updateGrid = (r, c, player) ->
     $("#i#{r}#{c}").html(
       if player == TicTacToe.player.X then "&#x2715;"
@@ -182,10 +183,12 @@ initialize = () ->
   resetStats()
   createGameBoard()
   if prevdimensions.rows != options.game.dimensions.rows or
-  prevdimensions.columns != options.game.dimensions.columns
+  prevdimensions.columns != options.game.dimensions.columns or
+  prevdimensions.k != options.game.dimensions.k
     setupNetwork()
   prevdimensions.rows = options.game.dimensions.rows
   prevdimensions.columns = options.game.dimensions.columns
+  prevdimensions.k = options.game.dimensions.k
   opponents[0] = new RandomTicTacToePlayer(game, TicTacToe.player.O)
   opponents[1] = new IdealTicTacToePlayer(game, TicTacToe.player.O)
   opponents[2] = new NeuralTicTacToePlayer(game, TicTacToe.player.O, network)
@@ -295,9 +298,11 @@ jQuery(() ->
       if options.game.opponent == "neural"
         opponent = opponents[2]
     )
-  game.add(options.game.dimensions, 'rows').min(0).max(9).step(1)
+  game.add(options.game.dimensions, 'rows').min(0).max(19).step(1)
     .onFinishChange((value) -> initialize())
-  game.add(options.game.dimensions, 'columns').min(0).max(9).step(1)
+  game.add(options.game.dimensions, 'columns').min(0).max(19).step(1)
+    .onFinishChange((value) -> initialize())
+  game.add(options.game.dimensions, 'k').min(0).max(19).step(1)
     .onFinishChange((value) -> initialize())
   training = gui.addFolder('training')
   training.add(options.training, 'fitInheritanceProbability', 0, 1)

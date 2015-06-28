@@ -1,7 +1,7 @@
 extend = require('node.extend')
 class TicTacToe
-  constructor: (rows = 3, columns = 3) ->
-    @dimensions = {r: rows, c: columns}
+  constructor: (rows = 3, columns = 3, k = 3) ->
+    @dimensions = {r: rows, c: columns, k: k}
     @newGame()
     @currentPlayer = TicTacToe.player.X
 
@@ -50,74 +50,102 @@ class TicTacToe
 
   _checkWin: (r, c) ->
     checkColumn = (r, c) =>
-      sum = 0
+      xsum = 0
+      osum = 0
       r = 0
-      while @isAValidPosition(r, c) and Math.abs(sum) != @dimensions.r
+      while @isAValidPosition(r, c) and Math.abs(xsum) != @dimensions.k and
+      Math.abs(osum) != @dimensions.k
         if @getPlayerAt(r, c) == TicTacToe.player.X
-          sum++
+          xsum++
+          osum = 0
         else if @getPlayerAt(r, c) == TicTacToe.player.O
-          sum--
+          osum--
+          xsum = 0
+        else
+          xsum = 0
+          osum = 0
         r++
-      if sum == -@dimensions.r
+      if osum == -@dimensions.k
         return TicTacToe.player.O
-      else if sum == @dimensions.r
+      else if xsum == @dimensions.k
         return TicTacToe.player.X
       else
         return TicTacToe.player.empty
     checkRow = (r, c) =>
-      sum = 0
+      xsum = 0
+      osum = 0
       c = 0
-      while @isAValidPosition(r, c) and Math.abs(sum) != @dimensions.c
+      while @isAValidPosition(r, c) and Math.abs(xsum) != @dimensions.k and
+      Math.abs(osum) != @dimensions.k
         if @getPlayerAt(r, c) == TicTacToe.player.X
-          sum++
+          xsum++
+          osum = 0
         else if @getPlayerAt(r, c) == TicTacToe.player.O
-          sum--
+          osum--
+          xsum = 0
+        else
+          xsum = 0
+          osum = 0
         c++
-      if sum == -@dimensions.c
+      if osum == -@dimensions.k
         return TicTacToe.player.O
-      else if sum == @dimensions.c
+      else if xsum == @dimensions.k
         return TicTacToe.player.X
       else
         return TicTacToe.player.empty
     checkForwardDiagonal = (r, c) => # /
-      sum = 0
+      xsum = 0
+      osum = 0
       while @isAValidPosition(r, c)
         r++
         c--
       r--
       c++
       while @isAValidPosition(r, c) and
-      Math.abs(sum) != Math.min(@dimensions.r, @dimensions.c)
+      Math.abs(xsum) != @dimensions.k and
+      Math.abs(osum) != @dimensions.k
         if @getPlayerAt(r, c) == TicTacToe.player.X
-          sum++
+          xsum++
+          osum = 0
         else if @getPlayerAt(r, c) == TicTacToe.player.O
-          sum--
+          osum--
+          xsum = 0
+        else
+          xsum = 0
+          osum = 0
         r--
         c++
-      if sum == -Math.min(@dimensions.r, @dimensions.c)
+      if osum == -@dimensions.k
         return TicTacToe.player.O
-      else if sum == Math.min(@dimensions.r, @dimensions.c)
+      else if xsum == @dimensions.k
         return TicTacToe.player.X
       else
         return TicTacToe.player.empty
     checkBackwardsDiagonal = (r, c) => # \
-      sum = 0
+      xsum = 0
+      osum = 0
       while @isAValidPosition(r, c)
         r--
         c--
       r++
       c++
       while @isAValidPosition(r, c) and
-      Math.abs(sum) != Math.min(@dimensions.r, @dimensions.c)
+      Math.abs(xsum) != @dimensions.k and
+      Math.abs(osum) != @dimensions.k
         if @getPlayerAt(r, c) == TicTacToe.player.X
-          sum++
+          xsum++
+          osum = 0
         else if @getPlayerAt(r, c) == TicTacToe.player.O
-          sum--
+          osum--
+          xsum = 0
+        else
+          xsum = 0
+          osum = 0
         r++
         c++
-      if sum == -Math.min(@dimensions.r, @dimensions.c)
+      if osum == -@dimensions.k
         return TicTacToe.player.O
-      else if sum == Math.min(@dimensions.r, @dimensions.c)
+      else if xsum == @dimensions.k
         return TicTacToe.player.X
       else
         return TicTacToe.player.empty
@@ -126,7 +154,7 @@ class TicTacToe
     .filter((x) => x == @getPlayerAt(r,c))[0]
     return status ? TicTacToe.player.empty
   clone: () ->
-    g = new TicTacToe(@dimensions.r, @dimensions.c)
+    g = new TicTacToe(@dimensions.r, @dimensions.c, @dimensions.k)
     for r in [0..@dimensions.r-1]
       for c in [0..@dimensions.c-1]
         g.board[r][c] = @board[r][c]

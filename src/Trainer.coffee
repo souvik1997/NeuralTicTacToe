@@ -1,5 +1,6 @@
 RandomTicTacToePlayer = require('./RandomTicTacToePlayer').RandomTicTacToePlayer
 NeuralTicTacToePlayer = require('./NeuralTicTacToePlayer').NeuralTicTacToePlayer
+IdealTicTacToePlayer = require('./IdealTicTacToePlayer').IdealTicTacToePlayer
 TicTacToe = require('./TicTacToe').TicTacToe
 Organism = require('./Organism').Organism
 Genome = require('./Genome').Genome
@@ -32,7 +33,7 @@ Trainer.trainNEAT = (network, options, numberOfGenerationsSimulated
   getStats = (organism) ->
     o_network = organism.genome.construct()
     game = new TicTacToe(options.game.dimensions.rows,
-      options.game.dimensions.columns)
+      options.game.dimensions.columns, options.game.dimensions.k)
     if Math.random() < 0.5
       network_player = TicTacToe.player.X
       random_player = TicTacToe.player.O
@@ -45,7 +46,8 @@ Trainer.trainNEAT = (network, options, numberOfGenerationsSimulated
       draws: 0
     }
     currentPlayer = TicTacToe.player.X
-    randomTTTPlayer = new RandomTicTacToePlayer(game, random_player,0)
+    randomTTTPlayer = new RandomTicTacToePlayer(game, random_player,
+      options.training.randomPlayerDifficulty)
     neuralPlayer = new NeuralTicTacToePlayer(game, network_player,
       o_network)
     neuralPlayer.setupSensors()
@@ -120,6 +122,51 @@ Trainer.trainNEAT = (network, options, numberOfGenerationsSimulated
       updateFunction(return_statistics)
     numberOfGenerationsSimulated++
   return return_statistics
+
+Trainer.trainBackprop = (network, options, numberOfGenerationsSimulated
+  updateFunction) ->
+  game = new TicTacToe(options.game.dimensions.rows,
+    options.game.dimensions.columns, options.game.dimensions.k)
+  randomPlayer = new RandomTicTacToePlayer(game, TicTacToe.player.X,
+    options.training.randomPlayerDifficulty)
+  idealPlayer = new IdealTicTacToePlayer(game, TicTacToe.player.O)
+  neuralPlayer = new NeuralTicTacToePlayer(game, TicTacToe.player.O, network)
+  neuralPlayer.setupSensors()
+  backpropHelper = (neuron, expected) ->
+    output = neuron.getOutput()
+    delta = output * (1-output) * (output-expected)
+    for d in neuron.dendrites
+      d.weight -= delta * d.neuron.getOutput()
+    for d in neuron.dendrites
+      backpropHelper(d.neuron, d.weight * delta)
+  while true
+    while game.state == TicTacToe.state.inProgress
+      game_clone = game.clone()
+      if game.currentPlayer == randomPlayer.player
+        randomPlayer.move()
+      else
+        idealMove = idealPlayer.move()
+        expectedOutput = [[0,0,0],
+                          [0,0,0],
+                          [0,0,0]]
+        expectedOutput[idealMove.r][idealMove.c] = 1
+        madeTheRightMove = false
+        while not madeTheRightMove
+          for r in [0..game.dimensions.r-1]
+            for c in [0..game.dimensions.c-1]
+              backpropHelper(neuralPlayer.getOutputNeuron(r,c),
+                expectedOutput[r][c])
+          neuralPlayer.game = game_clone.clone()
+          move = neuralPlayer.move()
+          if move.r == idealMove.r and move.c == idealMove.c
+            madeTheRightMove = true
+    game.newGame()
+
+
+
+
+
+
 
 root = module.exports ? this
 root.Trainer = Trainer

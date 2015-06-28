@@ -26,7 +26,6 @@ game = new TicTacToe()
 currentPlayer = TicTacToe.player.empty
 opponents = []
 opponent = undefined
-network = undefined
 prevdimensions = {}
 trainerEnabled = false
 numberOfGenerationsSimulated = 0
@@ -63,39 +62,31 @@ options =
       hiddenlayer_deletion:
         probability: 0.001
 }
-setupNetwork = () ->
-  network = new NeuralNetwork()
-  sensory_neurons = []
-  output_neurons = []
-  for r in [0..options.game.dimensions.rows-1]
-    for c in [0..options.game.dimensions.columns-1]
-      sensory_neurons.push new SensoryNeuron(
-        text: "("+r+","+c+")",
-        id:10+r+c/10)
-      output_neurons.push new OutputNeuron(
-        text: "("+r+","+c+")",
-        id:20+r+c/10)
-  for s in sensory_neurons
-    for o in output_neurons
-      network.link(s, o)
 worker = undefined
 messageHandler = (e) ->
-  network = NeuralNetwork.fromArray(e.data.network)
-  numberOfGenerationsSimulated += e.data.delta
-  fitness_boxplot_chart.series[0].addPoint([numberOfGenerationsSimulated]
-    .concat(e.data.statistics.fitnessValues), true,
-    fitness_boxplot_chart.series[0].data.length > 10)
-  total = e.data.statistics.best.wins + e.data.statistics.best.draws +
-    e.data.statistics.best.losses
-  wdl_current_chart.series[0].data[0].update(
-    e.data.statistics.best.wins/total * 100)
-  wdl_current_chart.series[0].data[1].update(
-    e.data.statistics.best.draws/total * 100)
-  wdl_current_chart.series[0].data[2].update(
-    e.data.statistics.best.losses/total * 100)
-  opponent.network = network
-  if opponent.setupSensors?
-    opponent.setupSensors()
+  if e.update == "neat"
+    network = NeuralNetwork.fromArray(e.data.neat.network)
+    numberOfGenerationsSimulated += e.data.delta.neat
+    fitness_boxplot_chart.series[0].addPoint([numberOfGenerationsSimulated]
+      .concat(e.data.statistics.neat.fitnessValues), true,
+      fitness_boxplot_chart.series[0].data.length > 10)
+    total = e.data.statistics.neat.best.wins +
+      e.data.statistics.neat.best.draws +
+      e.data.statistics.best.losses
+    wdl_current_chart.series[0].data[0].update(
+      e.data.statistics.neat.best.wins/total * 100)
+    wdl_current_chart.series[0].data[1].update(
+      e.data.statistics.neat.best.draws/total * 100)
+    wdl_current_chart.series[0].data[2].update(
+      e.data.statistics.neat.best.losses/total * 100)
+    opponents[2].network = network
+    if opponents[2].setupSensors?
+      opponents[2].setupSensors()
+  if e.update == "backprop"
+    network = NeuralNetwork.fromArray(e.data.backprop.network)
+    opponents[3].network = network
+    if opponents[3].setupSensors?
+      opponents[3].setupSensors()
 createGameBoard = () ->
   game = new TicTacToe(options.game.dimensions.rows,
     options.game.dimensions.columns, options.game.dimensions.k)
@@ -182,23 +173,40 @@ resetStats = () ->
 initialize = () ->
   resetStats()
   createGameBoard()
-  if prevdimensions.rows != options.game.dimensions.rows or
-  prevdimensions.columns != options.game.dimensions.columns or
-  prevdimensions.k != options.game.dimensions.k
-    setupNetwork()
-  prevdimensions.rows = options.game.dimensions.rows
-  prevdimensions.columns = options.game.dimensions.columns
-  prevdimensions.k = options.game.dimensions.k
   opponents[0] = new RandomTicTacToePlayer(game, TicTacToe.player.O)
   opponents[1] = new IdealTicTacToePlayer(game, TicTacToe.player.O)
   opponents[2] = new NeuralTicTacToePlayer(game, TicTacToe.player.O, network)
+  opponents[3] = new NeuralTicTacToePlayer(game, TicTacToe.player.O, network)
+  if prevdimensions.rows != options.game.dimensions.rows or
+  prevdimensions.columns != options.game.dimensions.columns or
+  prevdimensions.k != options.game.dimensions.k
+    network = new NeuralNetwork()
+    sensory_neurons = []
+    output_neurons = []
+    for r in [0..options.game.dimensions.rows-1]
+      for c in [0..options.game.dimensions.columns-1]
+        sensory_neurons.push new SensoryNeuron(
+          text: "("+r+","+c+")",
+          id:10+r+c/10)
+        output_neurons.push new OutputNeuron(
+          text: "("+r+","+c+")",
+          id:20+r+c/10)
+    for s in sensory_neurons
+      for o in output_neurons
+        network.link(s, o)
+    opponents[2].network = network
+    opponents[3].network = network
+  prevdimensions.rows = options.game.dimensions.rows
+  prevdimensions.columns = options.game.dimensions.columns
+  prevdimensions.k = options.game.dimensions.k
   if options.game.opponent == "random"
     opponent = opponents[0]
   if options.game.opponent == "ideal"
     opponent = opponents[1]
-  if options.game.opponent == "neural"
+  if options.game.opponent == "neural (NEAT)"
     opponent = opponents[2]
-  
+  if options.game.opponent == "neural (backprop)"
+    opponent = opponents[3]
 
 jQuery(() ->
   fitness_boxplot_chart = new Highcharts.Chart(
@@ -248,7 +256,7 @@ jQuery(() ->
   $("#modal-toggle").on('click.main', ->
     $("#mymodal").modal({show: true, backdrop: 'static', keyboard: false})
     if visualizer
-      visualizer.draw(network)
+      visualizer.draw(opponents[2].network)
   )
   $("#modal-close").off('click.main')
   $("#modal-close").on('click.main', ->
@@ -271,7 +279,9 @@ jQuery(() ->
       worker = Work(require('./worker'))
       worker.onmessage = messageHandler
       worker.postMessage({
-        network: network
+        network:
+          neat: opponents[2].network
+          backprop: opponents[3].network
         options: options
         numberOfGenerationsSimulated: numberOfGenerationsSimulated
       })
@@ -288,15 +298,17 @@ jQuery(() ->
   )
   gui = new dat.GUI({autoPlace: false})
   game = gui.addFolder('game')
-  game.add(options.game, 'opponent', ['neural', 'random', 'ideal',
-    'backprop']).onFinishChange(
+  game.add(options.game, 'opponent', ['neural (NEAT)',
+    'neural (backprop)', 'random', 'ideal']).onFinishChange(
     (value) ->
       if options.game.opponent == "random"
         opponent = opponents[0]
       if options.game.opponent == "ideal"
         opponent = opponents[1]
-      if options.game.opponent == "neural"
+      if options.game.opponent == "neural (NEAT)"
         opponent = opponents[2]
+      if options.game.opponent == "neural (backprop)"
+        opponent = opponents[3]
     )
   game.add(options.game.dimensions, 'rows').min(0).max(19).step(1)
     .onFinishChange((value) -> initialize())

@@ -43,7 +43,7 @@ options =
   training:
     fitInheritanceProbability: 1
     numToCreate: 20
-    gamesToPlay: 20
+    gamesToPlay: 100
     target: 4000
     learningrate: 1
     randomPlayerDifficulty: -10
@@ -214,19 +214,22 @@ initialize = () ->
   output_neurons = []
   for r in [0..options.game.dimensions.rows-1]
     for c in [0..options.game.dimensions.columns-1]
-      network.add new SensoryNeuron(
+      sensory_neurons.push new SensoryNeuron(
         text: "("+r+","+c+")",
         id:10+r+c/10)
-      network.add new OutputNeuron(
+      output_neurons.push new OutputNeuron(
         text: "("+r+","+c+")",
         id:20+r+c/10)
 
-  for n in [0..60]
-    for r in [0..options.game.dimensions.rows-1]
-      for c in [0..options.game.dimensions.columns-1]
-        hidden_neuron = new Neuron()
-        network.link(hidden_neuron, network.findInNetworkByID(20+r+c/10))
-        network.link(network.findInNetworkByID(10+r+c/10), hidden_neuron)
+  first_hidden_layer = []
+  for n in [0..30]
+    first_hidden_layer.push new Neuron()
+  for s in sensory_neurons
+    for h in first_hidden_layer
+      network.link(s, h, Math.nrandom()/1000)
+  for h in first_hidden_layer
+    for o in output_neurons
+      network.link(h, o, Math.nrandom()/1000)
   opponents[3].network = network
   opponents[3].setupSensors()
   prevdimensions.rows = options.game.dimensions.rows
@@ -386,11 +389,11 @@ jQuery(() ->
     .onFinishChange((value) -> resetStats())
   training.add(options.training, 'numToCreate').min(0).max(100).step(1)
     .onFinishChange((value) -> resetStats())
-  training.add(options.training, 'gamesToPlay').min(0).max(100).step(1)
+  training.add(options.training, 'gamesToPlay').min(80).max(400).step(1)
     .onFinishChange((value) -> resetStats())
   training.add(options.training, 'target').min(0).max(4000)
     .onFinishChange((value) -> resetStats())
-  training.add(options.training, 'learningrate').min(0).max(3)
+  training.add(options.training, 'learningrate').min(0).max(20)
     .onFinishChange((value) -> resetStats())
   training.add(options.training, 'randomPlayerDifficulty').min(-100).max(100)
     .onFinishChange((value) -> resetStats())

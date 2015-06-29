@@ -1,6 +1,7 @@
 RandomTicTacToePlayer = require('./RandomTicTacToePlayer').RandomTicTacToePlayer
 NeuralTicTacToePlayer = require('./NeuralTicTacToePlayer').NeuralTicTacToePlayer
 IdealTicTacToePlayer = require('./IdealTicTacToePlayer').IdealTicTacToePlayer
+NeuronType = require('./NeuronType').NeuronType
 TicTacToe = require('./TicTacToe').TicTacToe
 Organism = require('./Organism').Organism
 Genome = require('./Genome').Genome
@@ -132,13 +133,24 @@ Trainer.trainBackprop = (network, options, numberOfGenerationsSimulated
   idealPlayer = new IdealTicTacToePlayer(game, TicTacToe.player.O)
   neuralPlayer = new NeuralTicTacToePlayer(game, TicTacToe.player.O, network)
   neuralPlayer.setupSensors()
-  backpropHelper = (neuron, expected, learningrate) ->
-    output = neuron.getOutput()
-    delta = output * (1-output) * (output-expected)
+  errors = []
+  outputs = []
+  getOutputs = (network) ->
+    for n in network.neurons
+      outputs[n.id] = n.getOutput()
+  getErrors = (neuron, expected, set=false) ->
+    if not errors[neuron.id]?
+      errors[neuron.id] = 0
+    if not set
+      errors[neuron.id] += outputs[neuron.id]-expected
     for d in neuron.dendrites
-      d.weight -= delta * d.neuron.getOutput()
+      getErrors(d.neuron, errors[neuron.id]/d.weight, true)
+  updateWeights = (neuron, learningrate) ->
     for d in neuron.dendrites
-      backpropHelper(d.neuron, d.weight * delta, learningrate)
+      d.weight -= learningrate * errors[neuron.id] *
+        outputs[neuron.id] * (1-outputs[neuron.id]) *
+        outputs[d.neuron.id]
+      updateWeights(d.neuron, learningrate)
   console.log "hi"
   while true
     return_statistics = {}
@@ -157,12 +169,22 @@ Trainer.trainBackprop = (network, options, numberOfGenerationsSimulated
         trainingCounts.push(0)
         while not madeTheRightMove
           trainingCounts[trainingCounts.length-1]++
+          errors = []
+          outputs = []
+          getOutputs(neuralPlayer.network)
           for r in [0..game.dimensions.r-1]
             for c in [0..game.dimensions.c-1]
-              backpropHelper(neuralPlayer.getOutputNeuron(r,c),
-                expectedOutput[r][c], options.training.learningrate)
+              getErrors(neuralPlayer.getOutputNeuron(r,c),
+                expectedOutput[r][c])
+          for r in [0..game.dimensions.r-1]
+            for c in [0..game.dimensions.c-1]
+              updateWeights(neuralPlayer.getOutputNeuron(r,c),
+                Math.pow(10,options.training.learningrate))
           neuralPlayer.game = game_clone.clone()
           move = neuralPlayer.move()
+          console.log("Need to change
+            #{outputs[neuralPlayer
+              .getOutputNeuron(idealMove.r,idealMove.c).id]}")
           if move.r == idealMove.r and move.c == idealMove.c
             madeTheRightMove = true
     game.newGame()

@@ -5,7 +5,7 @@ class Neuron
     @_initialize(text, bias, id)
     @type = NeuronType.generic
 
-  _initialize: (@text, @bias=Math.nrandom()*5,
+  _initialize: (@text, @bias=Math.nrandom(),
       @id=Math.round(Math.random() * 1000000)) ->
     @dendrites = new Array()
     @events = new Array()
@@ -72,7 +72,7 @@ class OutputNeuron extends Neuron
     @type = NeuronType.output
 
 Neuron.generateRandomWeight = () ->
-  Math.nrandom() * 10
+  Math.nrandom() * 2
 
 root = module.exports ? this
 root.Neuron = Neuron
